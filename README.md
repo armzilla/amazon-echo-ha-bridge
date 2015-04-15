@@ -13,4 +13,9 @@ POST http://host:8080/api/devices
 }
 ```
 
+To run using maven
+```
+mvn spring-boot:run
+```
+
 somewhat hacked together for now, please excuse the hard coded values
