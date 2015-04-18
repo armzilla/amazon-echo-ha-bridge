@@ -1,5 +1,7 @@
-package com.armzilla.ha.wemoem;
+package com.armzilla.ha.hue;
 
+import com.armzilla.ha.api.DeviceResponse;
+import com.armzilla.ha.api.HueApiResponse;
 import com.armzilla.ha.dao.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

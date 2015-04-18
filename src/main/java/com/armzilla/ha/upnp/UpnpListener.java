@@ -1,4 +1,4 @@
-package com.armzilla.ha.wemoem;
+package com.armzilla.ha.upnp;
 
 import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;

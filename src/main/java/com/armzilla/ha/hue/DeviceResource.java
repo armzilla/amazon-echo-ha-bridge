@@ -1,4 +1,4 @@
-package com.armzilla.ha.wemoem;
+package com.armzilla.ha.hue;
 
 import com.armzilla.ha.dao.Device;
 import com.armzilla.ha.dao.DeviceDescriptor;
