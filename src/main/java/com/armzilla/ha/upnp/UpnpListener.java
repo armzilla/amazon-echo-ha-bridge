@@ -1,6 +1,7 @@
-package com.armzilla.ha.wemoem;
+package com.armzilla.ha.upnp;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,15 +14,26 @@ import java.net.*;
 @Component
 public class UpnpListener {
     private Logger log = Logger.getLogger(UpnpListener.class);
+    private static final int UPNP_DISCOVERY_PORT = 1900;
+    private static final String UPNP_MULTICAST_ADDRESS = "239.255.255.250";
+
+    @Value("${upnp.response.port}")
+    private int upnpResponsePort;
+
+    @Value("${server.port}")
+    private int httpServerPort;
+
+    @Value("${upnp.config.address}")
+    private String responseAddress;
 
     @Scheduled(fixedDelay = Integer.MAX_VALUE)
     public void startListening(){
         log.info("Starting UPNP Discovery Listener");
 
-        try (DatagramSocket responseSocket = new DatagramSocket(50000);
-             MulticastSocket upnpMulticastSocket  = new MulticastSocket(1900)) {
+        try (DatagramSocket responseSocket = new DatagramSocket(upnpResponsePort);
+             MulticastSocket upnpMulticastSocket  = new MulticastSocket(UPNP_DISCOVERY_PORT)) {
 
-            InetAddress upnpGroupAddress = InetAddress.getByName("239.255.255.250");
+            InetAddress upnpGroupAddress = InetAddress.getByName(UPNP_MULTICAST_ADDRESS);
             upnpMulticastSocket.joinGroup(upnpGroupAddress);
 
             while(true){ //trigger shutdown here
@@ -64,7 +76,7 @@ public class UpnpListener {
             "ST: urn:Belkin:device:**\r\n" +
             "USN: uuid:Socket-1_0-221438K0100073::urn:Belkin:device:**\r\n\r\n";
     protected boolean sendUpnpResponse(DatagramSocket socket, InetAddress requester, int sourcePort){
-        String discoveryResponse = String.format(discoveryTemplate, "192.168.1.22", "8080");
+        String discoveryResponse = String.format(discoveryTemplate, responseAddress, httpServerPort);
         DatagramPacket response = new DatagramPacket(discoveryResponse.getBytes(), discoveryResponse.length(), requester, sourcePort);
         try {
             socket.send(response);

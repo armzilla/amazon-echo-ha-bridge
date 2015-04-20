@@ -1,6 +1,5 @@
-package com.armzilla.ha.dao;
+package com.armzilla.ha.api;
 
-import java.util.List;
 import java.util.Map;
 
 /**
