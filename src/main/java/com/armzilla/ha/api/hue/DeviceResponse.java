@@ -1,4 +1,4 @@
-package com.armzilla.ha.api;
+package com.armzilla.ha.api.hue;
 
 import java.util.HashMap;
 import java.util.LinkedList;

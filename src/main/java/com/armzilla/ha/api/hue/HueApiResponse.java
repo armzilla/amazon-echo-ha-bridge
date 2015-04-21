@@ -1,4 +1,6 @@
-package com.armzilla.ha.api;
+package com.armzilla.ha.api.hue;
+
+import com.armzilla.ha.api.hue.DeviceResponse;
 
 import java.util.Map;
 

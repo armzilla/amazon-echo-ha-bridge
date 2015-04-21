@@ -48,7 +48,7 @@ public class UpnpListener {
                 upnpMulticastSocket.receive(packet);
                 String packetString = new String(packet.getData());
                 if(isSSDPDiscovery(packetString)){
-                    log.info("Got SSDP Discovery packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort());
+                    log.debug("Got SSDP Discovery packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort());
                     sendUpnpResponse(responseSocket, packet.getAddress(), packet.getPort());
                 }
             }
