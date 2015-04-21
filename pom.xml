@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.armzilla.ha</groupId>
-	<artifactId>wemoem</artifactId>
+	<artifactId>amazon-echo-bridge</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>Amazon Echo Bridge</name>
+	<description>Emulates a Philips Hue bridge to allow the Amazon Echo to hook up to other HA</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
