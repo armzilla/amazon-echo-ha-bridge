@@ -48,7 +48,7 @@ public class UpnpListener {
                 upnpMulticastSocket.receive(packet);
                 String packetString = new String(packet.getData());
                 if(isSSDPDiscovery(packetString)){
-                    log.debug("Got SSDP Discovery packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort());
+                    log.info("Got SSDP Discovery packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort());
                     sendUpnpResponse(responseSocket, packet.getAddress(), packet.getPort());
                 }
             }
@@ -75,17 +75,20 @@ public class UpnpListener {
     }
 
     String discoveryTemplate = "HTTP/1.1 200 OK\r\n" +
+            "CACHE-CONTROL: max-age=86400\r\n" +
+            "EXT:\r\n" +
             "LOCATION: http://%s:%s/upnp/amazon-ha-bridge/setup.xml\r\n" +
             "OPT: \"http://schemas.upnp.org/upnp/1/0/\"; ns=01\r\n" +
-            "01-NLS: 86f81bce-1dd2-11b2-a14f-ab8000ac1b49\r\n" +
-            "SERVER: Unspecified, UPnP/1.0, Unspecified\r\n" +
-            "X-User-Agent: redsonic\r\n" +
+            "01-NLS: %s\r\n" +
             "ST: urn:Belkin:device:**\r\n" +
             "USN: uuid:Socket-1_0-221438K0100073::urn:Belkin:device:**\r\n\r\n";
     protected void sendUpnpResponse(DatagramSocket socket, InetAddress requester, int sourcePort) throws IOException {
-        String discoveryResponse = String.format(discoveryTemplate, responseAddress, httpServerPort);
+        String discoveryResponse = String.format(discoveryTemplate, responseAddress, httpServerPort, getRandomUUIDString());
         DatagramPacket response = new DatagramPacket(discoveryResponse.getBytes(), discoveryResponse.length(), requester, sourcePort);
         socket.send(response);
+    }
 
+    protected String getRandomUUIDString(){
+        return "88f6698f-2c83-4393-bd03-cd54a9f8595"; // https://xkcd.com/221/
     }
 }

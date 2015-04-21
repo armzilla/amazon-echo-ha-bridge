@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,10 +15,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/upnp")
-public class UpnpResource {
+public class UpnpSettingsResource {
 
-    private Logger log = Logger.getLogger(UpnpResource.class);
-        protected static RestTemplate restTemplate = new RestTemplate();
+    private Logger log = Logger.getLogger(UpnpSettingsResource.class);
 
         private String hueTemplate = "<?xml version=\"1.0\"?>\n" +
                 "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">\n" +
@@ -30,15 +28,15 @@ public class UpnpResource {
                 "<URLBase>http://%s:%s/</URLBase>\n" + //hostname string
                 "<device>\n" +
                 "<deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>\n" +
-                "<friendlyName>Philips hue (%s)</friendlyName>\n" +
+                "<friendlyName>Amazon-Echo-HA-Bridge (%s)</friendlyName>\n" +
                 "<manufacturer>Royal Philips Electronics</manufacturer>\n" +
-                "<manufacturerURL>http://www.philips.com</manufacturerURL>\n" +
-                "<modelDescription>Philips hue Personal Wireless Lighting</modelDescription>\n" +
+                "<manufacturerURL>http://www.armzilla..com</manufacturerURL>\n" +
+                "<modelDescription>Hue Emulator for Amazon Echo bridge</modelDescription>\n" +
                 "<modelName>Philips hue bridge 2012</modelName>\n" +
                 "<modelNumber>929000226503</modelNumber>\n" +
-                "<modelURL>http://www.meethue.com</modelURL>\n" +
-                "<serialNumber>00178809923b</serialNumber>\n" +
-                "<UDN>uuid:2f402f80-da50-11e1-9b23-00178809923b</UDN>\n" +
+                "<modelURL>http://www.armzilla.com/amazon-echo-ha-bridge</modelURL>\n" +
+                "<serialNumber>01189998819991197253</serialNumber>\n" +
+                "<UDN>uuid:88f6698f-2c83-4393-bd03-cd54a9f8595</UDN>\n" +
                 "<serviceList>\n" +
                 "<service>\n" +
                 "<serviceType>(null)</serviceType>\n" +
