@@ -1,4 +1,4 @@
-package com.armzilla.ha.hue;
+package com.armzilla.ha.devicemanagmeent;
 
 import com.armzilla.ha.dao.Device;
 import com.armzilla.ha.dao.DeviceDescriptor;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.websocket.server.PathParam;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -41,9 +42,18 @@ public class DeviceResource {
 
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<List<DeviceDescriptor>> findAllDevices() {
-
         List<DeviceDescriptor> deviceList = deviceRepository.findAll();
         List<DeviceDescriptor> plainList = new LinkedList<>(deviceList);
         return new ResponseEntity<>(plainList, null, HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/{lightId}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<DeviceDescriptor> findByDeviceId(@PathParam("lightId") String id){
+        DeviceDescriptor descriptor = deviceRepository.findById(id);
+        if(descriptor == null){
+            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(descriptor, null, HttpStatus.OK);
+    }
+
 }
