@@ -19,3 +19,5 @@ mvn spring-boot:run
 ```
 
 somewhat hacked together for now, please excuse the hard coded values
+
+--upnp.config.address=<ipaddress for upnp response>
