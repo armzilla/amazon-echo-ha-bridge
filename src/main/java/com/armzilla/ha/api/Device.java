@@ -1,4 +1,4 @@
-package com.armzilla.ha.dao;
+package com.armzilla.ha.api;
 
 /**
  * Created by arm on 4/13/15.

@@ -10,6 +10,6 @@ import java.util.List;
 public interface DeviceRepository extends ElasticsearchRepository<DeviceDescriptor, String> {
     List<DeviceDescriptor> findByDeviceType(String type);
     List<DeviceDescriptor> findAll();
-    DeviceDescriptor findById(String id);
+    DeviceDescriptor findOne(String id);
 
 }

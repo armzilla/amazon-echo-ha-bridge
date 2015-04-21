@@ -1,17 +1,17 @@
 package com.armzilla.ha.devicemanagmeent;
 
-import com.armzilla.ha.dao.Device;
+import com.armzilla.ha.api.Device;
 import com.armzilla.ha.dao.DeviceDescriptor;
 import com.armzilla.ha.dao.DeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.websocket.server.PathParam;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -48,12 +48,23 @@ public class DeviceResource {
     }
 
     @RequestMapping(value = "/{lightId}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<DeviceDescriptor> findByDeviceId(@PathParam("lightId") String id){
-        DeviceDescriptor descriptor = deviceRepository.findById(id);
+    public ResponseEntity<DeviceDescriptor> findByDevicId(@PathVariable("lightId") String id){
+        DeviceDescriptor descriptor = deviceRepository.findOne(id);
         if(descriptor == null){
             return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(descriptor, null, HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/{lightId}", method = RequestMethod.DELETE, produces = "application/json")
+    public ResponseEntity<String> deleteDeviceById(@PathVariable("lightId") String id){
+        DeviceDescriptor deleted = deviceRepository.findOne(id);
+        if(deleted == null){
+            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+        }
+        deviceRepository.delete(deleted);
+        return new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT);
+    }
+
 
 }

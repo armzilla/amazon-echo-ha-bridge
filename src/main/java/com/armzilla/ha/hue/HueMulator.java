@@ -77,7 +77,7 @@ public class HueMulator {
     @RequestMapping(value = "/{userId}/lights/{lightId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<DeviceResponse> getLigth(@PathVariable(value = "lightId") String lightId, @PathVariable(value = "userId") String userId, HttpServletRequest request) {
         log.info("hue light requested: " + lightId + " from " + request.getRemoteAddr());
-        DeviceDescriptor device = repository.findById(lightId);
+        DeviceDescriptor device = repository.findOne(lightId);
         if (device == null) {
             return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         } else {
@@ -109,7 +109,7 @@ public class HueMulator {
         } else {
             setting = "[{\"success\":{\"/lights/" + lightId + "/state/on\":false}}]";
         }
-        DeviceDescriptor device = repository.findById(lightId);
+        DeviceDescriptor device = repository.findOne(lightId);
         if (device == null) {
             return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
