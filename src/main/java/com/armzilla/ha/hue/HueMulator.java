@@ -3,6 +3,11 @@ package com.armzilla.ha.hue;
 import com.armzilla.ha.api.hue.DeviceResponse;
 import com.armzilla.ha.api.hue.HueApiResponse;
 import com.armzilla.ha.dao.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +36,10 @@ public class HueMulator {
     protected static RestTemplate restTemplate = new RestTemplate();
     @Autowired
     private DeviceRepository repository;
+    private HttpClient httpClient;
+    public HueMulator(){
+        httpClient = HttpClients.createDefault(); //patched for now, moving away from HueMulator doing work
+    }
 
 
     @RequestMapping(value = "/{userId}/lights", method = RequestMethod.GET, produces = "application/json")
@@ -120,8 +130,10 @@ public class HueMulator {
         } else {
             url = device.getOffUrl();
         }
-
-        String response = restTemplate.getForObject(url, String.class);
+        //make call
+        if(!doHttpGETRequest(url)){
+            return new ResponseEntity<>(null, null, HttpStatus.SERVICE_UNAVAILABLE);
+        }
 
         HttpHeaders headerMap = new HttpHeaders();
         headerMap.set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
@@ -139,5 +151,19 @@ public class HueMulator {
 
         ResponseEntity<String> entity = new ResponseEntity<>(setting, headerMap, HttpStatus.OK);
         return entity;
+    }
+
+    protected boolean doHttpGETRequest(String url){
+        HttpGet httpGet = new HttpGet(url);
+        try {
+            HttpResponse response = httpClient.execute(httpGet);
+            if(response.getStatusLine().getStatusCode() == 200){
+                EntityUtils.consume(response.getEntity()); //close out inputstream
+                return true;
+            }
+        } catch (IOException e) {
+            log.error("Error calling out to HA gateway", e);
+        }
+        return false;
     }
 }
