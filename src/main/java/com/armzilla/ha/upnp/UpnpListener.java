@@ -36,57 +36,54 @@ public class UpnpListener {
     private ApplicationContext applicationContext;
 
     @Scheduled(fixedDelay = Integer.MAX_VALUE)
-    public void startListening(){
-    	log.info("Starting UPNP Discovery Listener");
+	public void startListening(){
+		log.info("Starting UPNP Discovery Listener");
+	
+		try (DatagramSocket responseSocket = new DatagramSocket(upnpResponsePort);
+				MulticastSocket upnpMulticastSocket  = new MulticastSocket(UPNP_DISCOVERY_PORT);) {
+			InetSocketAddress socketAddress = new InetSocketAddress(UPNP_MULTICAST_ADDRESS, UPNP_DISCOVERY_PORT);
+			Enumeration<NetworkInterface> ifs =	NetworkInterface.getNetworkInterfaces();
 
-    	try (DatagramSocket responseSocket = new DatagramSocket(upnpResponsePort);
-    			MulticastSocket upnpMulticastSocket  = new MulticastSocket(UPNP_DISCOVERY_PORT);) {
-    		InetSocketAddress socketAddress = new InetSocketAddress(UPNP_MULTICAST_ADDRESS, UPNP_DISCOVERY_PORT);
-
-
-
-    		Enumeration<NetworkInterface> ifs =
-    				NetworkInterface.getNetworkInterfaces();
-    		while (ifs.hasMoreElements()) {
-    			NetworkInterface xface = ifs.nextElement();
-    			Enumeration<InetAddress> addrs = xface.getInetAddresses();
-    			String name = xface.getName();
-    			int IPsPerNic = 0;
-
-    			while (addrs.hasMoreElements()) {
-    				InetAddress addr = addrs.nextElement();
-    				log.debug(name + " ... has addr " + addr);
-    				if (InetAddressUtils.isIPv4Address(addr.getHostAddress())) {
-    					IPsPerNic++;
-    				}
-    			}
-    			log.debug("Checking " + name + " to our interface set");
-    			if (IPsPerNic > 0) {
-    				upnpMulticastSocket.joinGroup(socketAddress, xface);
-    				log.debug("Adding " + name + " to our interface set");
-    			}
-    		}
-
-    		while(true){ //trigger shutdown here
-    			byte[] buf = new byte[1024];
-    			DatagramPacket packet = new DatagramPacket(buf, buf.length);
-    			upnpMulticastSocket.receive(packet);
-    			String packetString = new String(packet.getData());
-    			if(isSSDPDiscovery(packetString)){
-    				log.debug("Got SSDP Discovery packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort());
-    				sendUpnpResponse(responseSocket, packet.getAddress(), packet.getPort());
-    			}
-    		}
-
-    	}  catch (IOException e) {
-    		log.error("UpnpListener encountered an error. Shutting down", e);
-    		ConfigurableApplicationContext context = (ConfigurableApplicationContext) UpnpListener.this.applicationContext;
-    		context.close();
-
-    	}
-    	log.info("UPNP Discovery Listener Stopped");
-
-    }
+			while (ifs.hasMoreElements()) {
+				NetworkInterface xface = ifs.nextElement();
+				Enumeration<InetAddress> addrs = xface.getInetAddresses();
+				String name = xface.getName();
+				int IPsPerNic = 0;
+	
+				while (addrs.hasMoreElements()) {
+					InetAddress addr = addrs.nextElement();
+					log.debug(name + " ... has addr " + addr);
+					if (InetAddressUtils.isIPv4Address(addr.getHostAddress())) {
+						IPsPerNic++;
+					}
+				}
+				log.debug("Checking " + name + " to our interface set");
+				if (IPsPerNic > 0) {
+					upnpMulticastSocket.joinGroup(socketAddress, xface);
+					log.debug("Adding " + name + " to our interface set");
+				}
+			}
+	
+			while(true){ //trigger shutdown here
+				byte[] buf = new byte[1024];
+				DatagramPacket packet = new DatagramPacket(buf, buf.length);
+				upnpMulticastSocket.receive(packet);
+				String packetString = new String(packet.getData());
+				if(isSSDPDiscovery(packetString)){
+					log.debug("Got SSDP Discovery packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort());
+					sendUpnpResponse(responseSocket, packet.getAddress(), packet.getPort());
+				}
+			}
+	
+		}  catch (IOException e) {
+			log.error("UpnpListener encountered an error. Shutting down", e);
+			ConfigurableApplicationContext context = (ConfigurableApplicationContext) UpnpListener.this.applicationContext;
+			context.close();
+	
+		}
+		log.info("UPNP Discovery Listener Stopped");
+	
+	}
 
     /**
      * very naive ssdp discovery packet detection
