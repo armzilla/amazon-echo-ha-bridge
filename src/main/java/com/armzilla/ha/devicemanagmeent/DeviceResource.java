@@ -44,7 +44,7 @@ public class DeviceResource {
     private String veraIP;
 
 
-  //  @PostConstruct
+    @PostConstruct
     @RequestMapping(method = RequestMethod.GET, produces = "application/json", headers = "Accept=application/json", value = "/autoconfigureFromVera")
     public List<DeviceDescriptor> autoconfigureFromVera() throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
