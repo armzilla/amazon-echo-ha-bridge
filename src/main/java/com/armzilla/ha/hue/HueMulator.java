@@ -10,6 +10,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +47,7 @@ public class HueMulator {
     @RequestMapping(value = "/{userId}/lights", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Map<String, String>> getUpnpConfiguration(@PathVariable(value = "userId") String userId, HttpServletRequest request) {
         log.info("hue lights list requested: " + userId + " from " + request.getRemoteAddr());
-        List<DeviceDescriptor> deviceList = repository.findByDeviceType("switch");
+        Page<DeviceDescriptor> deviceList = repository.findByDeviceType("switch", new PageRequest(0,100));
         Map<String, String> deviceResponseMap = new HashMap<>();
         for (DeviceDescriptor device : deviceList) {
             deviceResponseMap.put(device.getId(), device.getName());
@@ -56,7 +58,7 @@ public class HueMulator {
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<HueApiResponse> getApi(@PathVariable(value = "userId") String userId, HttpServletRequest request) {
         log.info("hue api root requested: " + userId + " from " + request.getRemoteAddr());
-        List<DeviceDescriptor> descriptorList = repository.findByDeviceType("switch");
+        Page<DeviceDescriptor> descriptorList = repository.findByDeviceType("switch", new PageRequest(0, 100));
         if (descriptorList == null) {
             return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
