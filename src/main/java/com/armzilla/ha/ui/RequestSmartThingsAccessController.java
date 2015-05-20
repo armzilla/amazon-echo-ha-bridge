@@ -1,12 +1,17 @@
 package com.armzilla.ha.ui;
 
+import com.armzilla.ha.dao.DeviceDescriptor;
+import com.armzilla.ha.dao.DeviceRepository;
 import com.armzilla.ha.util.JsonReader;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,10 +19,15 @@ import sun.net.www.http.HttpClient;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 public class RequestSmartThingsAccessController {
+
+    @Autowired
+    private DeviceRepository repository;
 
     @Value("${application.smartthings.app.externalIP:externalIPMissing}")
     private String externalIP = "externalIPMissing";
@@ -27,18 +37,6 @@ public class RequestSmartThingsAccessController {
     private String clientId = "clientIdMissing";
     @Value("${application.smartthings.app.clientSecret:clientSecretMissing}")
     private String clientSecret = "clientSecretMissing";
-
-    @RequestMapping("ui/requestSTAccess")
-    public String requestSmartThingsAccess(@RequestParam(value="code", required=false, defaultValue="") String code, Map<String, Object> model) {
-        if (clientId.equals("clientIdMissing") || clientSecret.equals("clientSecretMissing")) {
-            return "ui/configureOauth";
-        }
-        model.put("clientId",this.clientId);
-        model.put("clientSecret",this.clientSecret);
-        model.put("code",code);
-        model.put("accessToken","");
-        return "ui/requestSmartThingsAccess";
-    }
 
     @RequestMapping("ui/importAuthorizedDevices")
     public String importAuthorizedDevices(@RequestParam(value="code", required=false, defaultValue="") String code,
@@ -103,6 +101,16 @@ public class RequestSmartThingsAccessController {
                 // Need to pass access Token to get added to the header
                 JSONArray switches = JsonReader.readJsonArrayFromUrl(switchUrl);
                 System.out.println("Switches json Returned=" + switches.toString());
+                // Remove the entire list of switches first so we can rebuild it.
+                // ToDo...Recode to add devices which were added
+                //        Keep devices that existed
+                //        Remove devices removed
+                Page<DeviceDescriptor> deviceList = repository.findByDeviceType("switch", new PageRequest(0,100));
+                Map<String, String> deviceResponseMap = new HashMap<>();
+                for (DeviceDescriptor device : deviceList) {
+                    repository.delete(device.getId());
+                }
+                // Now rebuild the list with the currently authorized devices
                 for (int switchIndex=0; switchIndex < switches.length();switchIndex++) {
                     JSONObject aSwitch = switches.getJSONObject(switchIndex);
                     System.out.println("Switch=" + aSwitch.toString());
@@ -115,6 +123,14 @@ public class RequestSmartThingsAccessController {
                             + "/off?access_token=" + accessToken;
                     System.out.println("onURL=" + onURL);
                     System.out.println("offURL=" + offURL);
+                    DeviceDescriptor deviceEntry = new DeviceDescriptor();
+                    deviceEntry.setId(UUID.randomUUID().toString());
+                    String name = aSwitch.getString("label");
+                    deviceEntry.setName(name);
+                    deviceEntry.setDeviceType("switch");
+                    deviceEntry.setOnUrl(onURL);
+                    deviceEntry.setOffUrl(offURL);
+                    repository.save(deviceEntry);
                 }
             }
         } catch (IOException exp) {

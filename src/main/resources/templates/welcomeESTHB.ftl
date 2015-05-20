@@ -12,7 +12,7 @@
 <br>
 <br>
 
-<a href="/ui/requestSTAccess">Request SmartThings Access</a>
+<a href="/ui/importAuthorizedDevices">Import Authorized Devices from Smart App</a>
 
 <br>
 <br>

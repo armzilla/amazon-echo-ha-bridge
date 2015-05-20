@@ -65,6 +65,4 @@ public class DeviceResource {
         deviceRepository.delete(deleted);
         return new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT);
     }
-
-
 }
