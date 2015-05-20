@@ -25,5 +25,6 @@ somewhat hacked together for now, please excuse the hard coded values
 
 grab the jar, run like this:
 ```
-java -jar amazon-echo-bridge-0.1.0.jar 
+java -jar amazon-echo-bridge-0.1.0.jar --upnp.config.address=192.168.1.240
 ```
+replace the --upnp.config.address value with the server ipv4 address. 
