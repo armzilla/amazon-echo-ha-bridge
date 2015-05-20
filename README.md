@@ -1,29 +1,22 @@
 ![codeship status](https://codeship.com/projects/998e16f0-ca03-0132-6689-76c03995407a/status?branch=master)
 
 
-# amazon-echo-ha-bridge
-emulates philips hue api to other home automation gateways.  The Amazon echo now supports wemo and philip hue... great news if you own any of those devices!
-My house is pretty heavily invested in the z-wave using the Vera as the gateway and thought it would be nice bridge the Amazon Echo to it.
+# amazon-echo-ha-bridge-smart-things
+This is a fork of armzilla amazon-echo-ha-bridge modifed for integration with Smart Things
 
-Register a device, bind to some sort of on/off (vera style) url
-```
-POST http://host:8080/api/devices
-{
-"name" : "bedroom light",
-"deviceType" : "switch",
-  "onUrl" : "http://192.168.1.201:3480/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=1&DeviceNum=41",
-  "offUrl" : "http://192.168.1.201:3480/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=0&DeviceNum=41"
-}
-```
+configure values in curly braces { } found in src/main/resources/application.properties
+then start with 
+startEchoStBridge.sh
 
-To run using maven
-```
-mvn spring-boot:run
-```
+The folder you run the shell from will then contain your database in a folder called "data" if you have issues and want to start over you can safely remove this folder and everything below to start from scratch
 
-somewhat hacked together for now, please excuse the hard coded values
+For the smart app OAuth to work you need to port forward from your router to the ip of the machine you are running this server.
+You need forward the port configured in application.properties  "server.port"
+You need to forward to the internal IP configured in "upnp.config.address"
+Your routers external ip should be configured in "application.smartthings.app.externalIP"
 
-grab the jar, run like this:
-```
-java -jar amazon-echo-bridge-0.1.0.jar 
-```
+You also need to configure your Smart App Oath Values
+application.smartthings.app.clientId={config your smart app cliendid}
+application.smartthings.app.clientSecret={config your smart app cliendSecret}
+
+I will add instructions on how to install the Smart App with OAuth enabled and acquire these values
