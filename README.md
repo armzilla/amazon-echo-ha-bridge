@@ -30,6 +30,7 @@ To Install Smart App do the following
 5) Click "Enable OAuth in Smart App" and enter data (Optional, diplays when you use OAuth Page)
    Enter "OAuth Client Display Name: "Echo Smart Things Hue Emulator"
    OAuth Client Display Link: "Echo Smart Things"
+   (Note: Copy OAuth Client Id and OAuth Client Secret into application.properties)
 6) Click Create
 7) Copy/Paste code from SmartApp/EchoSmartThingsEndpoint.groovy into the ide replacing all the existing code for this app
 8) Click Save
@@ -47,3 +48,28 @@ If you fail to forget you will see duplicate devices, just forget and reimport t
 
 I plan to work on a version which keeps unchanged devices, removes devices removed and adds devices added.
 Then you will only need to discover, not FORGET first.
+
+TODO:
+1) Add ability to rename devices.  currently the name matchins the Preferences Name in the Smart Things App
+2) Nicer GUI
+3) Support Multiple ST Hubs (When I have more then one so I can test :)
+4) Auto Configure external ip (what is my ip), local ip etc
+5) Admin page to change port
+6) upnp for port forwarding to router
+
+Know Issue:
+If you select no authorized swtiches and click "Authorize" your emulator will clear all values correctly.
+However for some reason when you return to authorize devices the smart app in the browser will display a message
+"The page at https//graph.api.smartthings.com says: Please select at least one device to authorize"
+Even though you are selectin devices.
+Workaround options:
+1) Open the Smart App on your phone, select devices and click done.  Now return the emulator page and authorize and
+   the devices selected in the phone app will display and authorize will work now.
+2) Delete the smart app and re-install (harder but list in case 1 doesn't work) If you do this rememnber to reconfigure
+   your OAuth values in the application.properties
+
+To rename a device you need to
+1) rename the device in your smart app (Dashboard->device->preference->set your name
+2) unauthorize the device
+3) re-authorize the device
+sync with echo (you may want to forget so old name doesn't stay in echo)

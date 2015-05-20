@@ -1,10 +1,10 @@
 package com.armzilla.ha.ui;
 
+import com.armzilla.ha.api.Device;
 import com.armzilla.ha.dao.DeviceDescriptor;
 import com.armzilla.ha.dao.DeviceRepository;
 import com.armzilla.ha.util.JsonReader;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -101,37 +101,45 @@ public class RequestSmartThingsAccessController {
                 // Need to pass access Token to get added to the header
                 JSONArray switches = JsonReader.readJsonArrayFromUrl(switchUrl);
                 System.out.println("Switches json Returned=" + switches.toString());
-                // Remove the entire list of switches first so we can rebuild it.
-                // ToDo...Recode to add devices which were added
-                //        Keep devices that existed
-                //        Remove devices removed
-                Page<DeviceDescriptor> deviceList = repository.findByDeviceType("switch", new PageRequest(0,100));
-                Map<String, String> deviceResponseMap = new HashMap<>();
-                for (DeviceDescriptor device : deviceList) {
-                    repository.delete(device.getId());
-                }
-                // Now rebuild the list with the currently authorized devices
+                HashMap<String,DeviceDescriptor> devicesAuthorized = new HashMap<String,DeviceDescriptor>();
                 for (int switchIndex=0; switchIndex < switches.length();switchIndex++) {
                     JSONObject aSwitch = switches.getJSONObject(switchIndex);
                     System.out.println("Switch=" + aSwitch.toString());
+                    String switchId = aSwitch.getString("id");
                     String onURL = "https://graph.api.smartthings.com"
                             + endpointUrl
-                            + "/switches/" + aSwitch.getString("id")
+                            + "/switches/" + switchId
                             + "/on?access_token=" + accessToken;
                     String offURL = "https://graph.api.smartthings.com" + endpointUrl
-                            + "/switches/" + aSwitch.getString("id")
+                            + "/switches/" + switchId
                             + "/off?access_token=" + accessToken;
                     System.out.println("onURL=" + onURL);
                     System.out.println("offURL=" + offURL);
                     DeviceDescriptor deviceEntry = new DeviceDescriptor();
-                    deviceEntry.setId(UUID.randomUUID().toString());
+                    deviceEntry.setId(switchId);
                     String name = aSwitch.getString("label");
                     deviceEntry.setName(name);
                     deviceEntry.setDeviceType("switch");
                     deviceEntry.setOnUrl(onURL);
                     deviceEntry.setOffUrl(offURL);
-                    repository.save(deviceEntry);
+                    devicesAuthorized.put(switchId,deviceEntry);
                 }
+                // Remove Devices no longer authorized
+                Page<DeviceDescriptor> deviceList = repository.findByDeviceType("switch", new PageRequest(0,100));
+                Map<String, String> deviceResponseMap = new HashMap<>();
+                for (DeviceDescriptor device : deviceList) {
+                    if (!devicesAuthorized.containsKey(device.getId())) {
+                        repository.delete(device.getId());
+                    }
+                }
+                // Add any devices newly authorized
+                for (DeviceDescriptor device : devicesAuthorized.values()) {
+                    // If device not found in repository add it
+                    if (repository.findOne(device.getId()) == null) {
+                        repository.save(device);
+                    }
+                }
+                // Now rebuild the list with the currently authorized devices
             }
         } catch (IOException exp) {
             System.out.print("Error Jason Reader Threw IO Exception getting endpoints");
@@ -141,5 +149,15 @@ public class RequestSmartThingsAccessController {
             System.out.println("Error:" + exp.getMessage());
         }
     }
+
+    @RequestMapping("ui/clearRepository")
+    public String clearRepository(Map<String, Object> model) {
+        Page<DeviceDescriptor> deviceList = repository.findByDeviceType("switch", new PageRequest(0,100));
+        for (DeviceDescriptor device: deviceList) {
+            repository.delete(device.getId());
+        }
+        return "redirect:/api/devices";
+    }
+
 }
 
