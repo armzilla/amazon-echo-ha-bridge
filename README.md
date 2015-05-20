@@ -36,3 +36,14 @@ To Install Smart App do the following
 9) Click Publish
 The Smart App should now be listed on your phone.  You can try opening it and selecting switches if you like.
 
+NOTE: This version deletes the device list and recreates each time you authenticate/add/remove devices.
+Therefore you must open the echo web portal and clear your current devices after an update
+settings->connected home->FORGET
+
+Then reimport your data
+"Alexa discover devices"
+
+If you fail to forget you will see duplicate devices, just forget and reimport to fix this.
+
+I plan to work on a version which keeps unchanged devices, removes devices removed and adds devices added.
+Then you will only need to discover, not FORGET first.
