@@ -4,9 +4,10 @@
 # amazon-echo-ha-bridge-smart-things
 This is a fork of armzilla amazon-echo-ha-bridge modifed for integration with Smart Things
 
-configure values in curly braces { } found in src/main/resources/application.properties
-then start with 
-startEchoStBridge.sh
+On unix edit startEchoStBridge.sh with your configration settings
+and start using startEchoStBridge.sh
+On Windows you are on your own :) you can use the last line in startEchoStBridge.sh for the java command replacing the config values in
+in the command.
 
 The folder you run the shell from will then contain your database in a folder called "data" if you have issues and want to start over you can safely remove this folder and everything below to start from scratch
 
