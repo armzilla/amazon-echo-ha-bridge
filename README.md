@@ -19,4 +19,20 @@ You also need to configure your Smart App Oath Values
 application.smartthings.app.clientId={config your smart app cliendid}
 application.smartthings.app.clientSecret={config your smart app cliendSecret}
 
-I will add instructions on how to install the Smart App with OAuth enabled and acquire these values
+To Install Smart App do the following
+1) Login to IDE https://graph.api.smartthings.com
+2) Select "My Smart Apps"
+3) Select "+New Smart App"
+4) Fill in Data
+    Name: Echo Smarthings App
+    Author: Ronald Gouldner
+    Description: Anything paste will replace anyway
+5) Click "Enable OAuth in Smart App" and enter data (Optional, diplays when you use OAuth Page)
+   Enter "OAuth Client Display Name: "Echo Smart Things Hue Emulator"
+   OAuth Client Display Link: "Echo Smart Things"
+6) Click Create
+7) Copy/Paste code from SmartApp/EchoSmartThingsEndpoint.groovy into the ide replacing all the existing code for this app
+8) Click Save
+9) Click Publish
+The Smart App should now be listed on your phone.  You can try opening it and selecting switches if you like.
+
