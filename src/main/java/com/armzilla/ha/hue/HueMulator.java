@@ -159,8 +159,8 @@ public class HueMulator {
         HttpGet httpGet = new HttpGet(url);
         try {
             HttpResponse response = httpClient.execute(httpGet);
+            EntityUtils.consume(response.getEntity()); //close out inputstream ignore content
             if(response.getStatusLine().getStatusCode() == 200){
-                EntityUtils.consume(response.getEntity()); //close out inputstream
                 return true;
             }
         } catch (IOException e) {
