@@ -9,3 +9,5 @@ buildNumber.properties
 *.iml
 data
 .idea
+echoBridge.pid
+logs/
