@@ -20,6 +20,10 @@ You also need to configure your Smart App Oath Values
 application.smartthings.app.clientId={config your smart app cliendid}
 application.smartthings.app.clientSecret={config your smart app cliendSecret}
 
+NOTE: If you change these files in applciation.properties then you need to compile your own jar
+      which is done with command: mvn clean install
+      Otherwise you can just place these values in the startEchoStBridge.sh which will override the application.properties
+
 To Install Smart App do the following
 1) Login to IDE https://graph.api.smartthings.com
 2) Select "My Smart Apps"
@@ -36,19 +40,9 @@ To Install Smart App do the following
 7) Copy/Paste code from SmartApp/EchoSmartThingsEndpoint.groovy into the ide replacing all the existing code for this app
 8) Click Save
 9) Click Publish
-The Smart App should now be listed on your phone.  You can try opening it and selecting switches if you like.
+10) The smart app will be on your phone to be installed or it will install when you configure it from the server.
 
-NOTE: This version deletes the device list and recreates each time you authenticate/add/remove devices.
-Therefore you must open the echo web portal and clear your current devices after an update
-settings->connected home->FORGET
 
-Then reimport your data
-"Alexa discover devices"
-
-If you fail to forget you will see duplicate devices, just forget and reimport to fix this.
-
-I plan to work on a version which keeps unchanged devices, removes devices removed and adds devices added.
-Then you will only need to discover, not FORGET first.
 
 TODO:
 1) Add ability to rename devices.  currently the name matchins the Preferences Name in the Smart Things App
