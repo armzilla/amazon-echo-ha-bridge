@@ -1,6 +1,6 @@
 sudo cp echoStBridgeService /etc/init.d
 sudo chmod 755 /etc/init.d/echoStBridgeService 
-update-rc.d echoStBridgeService defaults
+sudo update-rc.d echoStBridgeService defaults
 
 echo "installed service echoBridgeService"
 echo "which will auto start on reboot"
