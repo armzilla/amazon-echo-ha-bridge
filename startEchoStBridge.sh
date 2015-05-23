@@ -2,7 +2,7 @@
 #
 # Replace all values with {} below rmoving the curly braces
 #
-#export LOCAL_IP={Enter this servers local ip}
+export LOCAL_IP={Enter this servers local ip}
 
 export UPNP_PORT=50000
 export SERVER_PORT=8080
