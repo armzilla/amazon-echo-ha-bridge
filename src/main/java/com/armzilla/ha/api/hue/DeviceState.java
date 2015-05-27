@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class DeviceState {
     private boolean on;
-    private int bri;
+    private int bri = 255;
     private int hue;
     private int sat;
     private String effect;
@@ -95,5 +95,13 @@ public class DeviceState {
 
     public void setXy(List<Double> xy) {
         this.xy = xy;
+    }
+
+    @Override
+    public String toString() {
+        return "DeviceState{" +
+                "on=" + on +
+                ", bri=" + bri +
+                '}';
     }
 }

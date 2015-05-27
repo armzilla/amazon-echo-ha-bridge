@@ -1,8 +1,11 @@
 package com.armzilla.ha.hue;
 
 import com.armzilla.ha.api.hue.DeviceResponse;
+import com.armzilla.ha.api.hue.DeviceState;
 import com.armzilla.ha.api.hue.HueApiResponse;
 import com.armzilla.ha.dao.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -25,7 +28,6 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,12 +37,18 @@ import java.util.Map;
 @RequestMapping("/api")
 public class HueMulator {
     private static final Logger log = Logger.getLogger(HueMulator.class);
-    protected static RestTemplate restTemplate = new RestTemplate();
+    private static final String INTENSITY_PERCENT = "${intensity.percent}";
+    private static final String INTENSITY_BYTE = "${intensity.byte}";
     @Autowired
     private DeviceRepository repository;
     private HttpClient httpClient;
+    private ObjectMapper mapper;
+
+
     public HueMulator(){
         httpClient = HttpClients.createDefault(); //patched for now, moving away from HueMulator doing work
+        mapper = new ObjectMapper(); //work around Echo incorrect content type and breaking mapping. Map manually
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
 
@@ -112,26 +120,53 @@ public class HueMulator {
     }
 
     @RequestMapping(value = "/{userId}/lights/{lightId}/state", method = RequestMethod.PUT)
-    public ResponseEntity<String> stateChange(@PathVariable(value = "lightId") String lightId, @PathVariable(value = "userId") String userId, HttpServletRequest request, @RequestBody String body) {
+    public ResponseEntity<String> stateChange(@PathVariable(value = "lightId") String lightId, @PathVariable(value = "userId") String userId, HttpServletRequest request, @RequestBody String requestString) {
+        /**
+         * strangely enough the Echo sends a content type of application/x-www-form-urlencoded even though
+         * it sends a json object
+         */
         log.info("hue state change requested: " + userId + " from " + request.getRemoteAddr());
-        log.info("hue stage change body: " + body);
-        String setting;
-        if (body.contains("true")) {
-            setting = "[{\"success\":{\"/lights/" + lightId + "/state/on\":true}}]";
-        } else {
-            setting = "[{\"success\":{\"/lights/" + lightId + "/state/on\":false}}]";
+        log.info("hue stage change body: " + requestString );
+
+        DeviceState state = null;
+        try {
+            state = mapper.readValue(requestString, DeviceState.class);
+        } catch (IOException e) {
+            log.info("object mapper barfed on input", e);
+            return new ResponseEntity<>(null, null, HttpStatus.BAD_REQUEST);
         }
+
         DeviceDescriptor device = repository.findOne(lightId);
         if (device == null) {
             return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
 
+        String responseString;
         String url;
-        if (body.contains("true")) {
+        if (state.isOn()) {
+            responseString = "[{\"success\":{\"/lights/" + lightId + "/state/on\":true}}]";
             url = device.getOnUrl();
         } else {
+            responseString = "[{\"success\":{\"/lights/" + lightId + "/state/on\":false}}]";
             url = device.getOffUrl();
         }
+
+        /* light weight templating here, was going to use free marker but it was a bit too
+        *  heavy for what we were trying to do.
+        *
+        *  currently provides only two variables:
+        *  intensity.byte : 0-255 brightness.  this is raw from the echo
+        *  intensity.percent : 0-100, adjusted for the vera
+        */
+        if(url.contains(INTENSITY_BYTE)){
+            String intensityByte = String.valueOf(state.getBri());
+            url = url.replace(INTENSITY_BYTE, intensityByte);
+        }else if(url.contains(INTENSITY_PERCENT)){
+            int percentBrightness = (int) Math.round(state.getBri()/255.0*100);
+            String intensityPercent = String.valueOf(percentBrightness);
+            url = url.replace(INTENSITY_PERCENT, intensityPercent);
+        }
+
         //make call
         if(!doHttpGETRequest(url)){
             return new ResponseEntity<>(null, null, HttpStatus.SERVICE_UNAVAILABLE);
@@ -151,15 +186,17 @@ public class HueMulator {
         headerMap.set("Content-Type", "application/json");
 
 
-        ResponseEntity<String> entity = new ResponseEntity<>(setting, headerMap, HttpStatus.OK);
+        ResponseEntity<String> entity = new ResponseEntity<>(responseString, headerMap, HttpStatus.OK);
         return entity;
     }
 
-    protected boolean doHttpGETRequest(String url){
+    protected boolean doHttpGETRequest(String url) {
+        log.info("calling GET on URL: " + url);
         HttpGet httpGet = new HttpGet(url);
         try {
             HttpResponse response = httpClient.execute(httpGet);
             EntityUtils.consume(response.getEntity()); //close out inputstream ignore content
+            log.info("GET on URL responded: " + response.getStatusLine().getStatusCode());
             if(response.getStatusLine().getStatusCode() == 200){
                 return true;
             }
