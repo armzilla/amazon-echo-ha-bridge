@@ -11,28 +11,70 @@
 # Description:       Echo - Smart Things Hue Emulation Bridge Service
 ### END INIT INFO
 
-# Some things that run always
+# Alter these two lines if your server user/home is different then recommended
+export ECHO_BRIDGE_USER="pi"
 export ECHO_BRIDGE_HOME="/home/pi/git/amazon-echo-ha-bridge-smart-things"
+
+#scripts
+START="./startEchoStBridge.sh"
+STOP="./stopEchoStBridge.sh"
+STATUS="./statusEchoStBridge.sh"
+
+ME=`whoami`
+if [ "${ME}" == "pi" ]
+then
+    SU=""
+else
+    SU="su ${ECHO_BRIDGE_USER} -c"
+fi
 
 # Carry out specific functions when asked to by the system
 case "$1" in
   start)
     cd ${ECHO_BRIDGE_HOME}
-    ./startEchoStBridge.sh
+    ${SU} ${START}
     ;;
   stop)
     cd ${ECHO_BRIDGE_HOME}
-    ./stopEchoStBridge.sh
+    ${SU} ${STOP}
     ;;
   status)
     cd ${ECHO_BRIDGE_HOME}
-    ./statusEchoStBridge.sh
+    ${SU} ${STATUS}
     ;;
   restart)
     cd ${ECHO_BRIDGE_HOME}
-    ./stopEchoStBridge.sh
+    ${SU} ${STOP}
     sleep 2
-    ./startEchoStBridge.sh
+    ${SU} ${START}
+    ;;
+  config)
+    echo "echoStBridgeService configuration"
+    echo "ECHO_BRIDGE_USER=${ECHO_BRIDGE_USER}"
+    echo "=========="
+    echo "Checking config user"
+    if [ "${ME}" == "${ECHO_BRIDGE_USER}" ]
+    then 
+        echo "User OK"
+    else
+        echo "Current User [${ME}] does not match configured user [${ECHO_BRIDGE_USER}]"
+        echo "If you want bridge to run as current user then edit echoStBridgeService file and re-install"
+    fi
+    echo "=========="
+    echo "ECHO_BRIDGE_HOME=${ECHO_BRIDGE_HOME}"
+    echo "=========="
+    echo "Checking config home"
+    if [ -d ${ECHO_BRIDGE_HOME} ]
+    then
+        if [ -f ${ECHO_BRIDGE_HOME}/${START} ]
+        then
+            echo "Echo Bridge Home OK"
+        else
+            echo "Could not find startEchoStBridge.sh in ${ECHO_BRIDGE_HOME}"
+        fi
+    else 
+        echo "Could not find Echo Bridge Home [${ECHO_BRIDGE_HOME}]"
+    fi
     ;;
   *)
     echo "Usage: /etc/init.d/echoStBridgeService {start|stop|restart|status}"
