@@ -81,15 +81,6 @@ public class HueMulator {
         apiResponse.setLights(deviceList);
 
         HttpHeaders headerMap = new HttpHeaders();
-        headerMap.set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
-        headerMap.set("Pragma", "no-cache");
-        headerMap.set("Connection", "close");
-        headerMap.set("Access-Control-Max-Age", "0");
-        headerMap.set("Access-Control-Allow-Origin", "*");
-        headerMap.set("Access-Control-Allow-Credentials", "true");
-        headerMap.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
-        headerMap.set(" Access-Control-Allow-Headers", "Content-Type");
-
         ResponseEntity<HueApiResponse> entity = new ResponseEntity<>(apiResponse, headerMap, HttpStatus.OK);
         return entity;
     }
@@ -106,14 +97,6 @@ public class HueMulator {
         DeviceResponse lightResponse = DeviceResponse.createResponse(device.getName(), device.getId());
 
         HttpHeaders headerMap = new HttpHeaders();
-        headerMap.set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
-        headerMap.set("Pragma", "no-cache");
-        headerMap.set("Connection", "close");
-        headerMap.set("Access-Control-Max-Age", "0");
-        headerMap.set("Access-Control-Allow-Origin", "*");
-        headerMap.set("Access-Control-Allow-Credentials", "true");
-        headerMap.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE");
-        headerMap.set("Access-Control-Allow-Headers", "Content-Type");
 
         ResponseEntity<DeviceResponse> entity = new ResponseEntity<>(lightResponse, headerMap, HttpStatus.OK);
         return entity;
@@ -173,18 +156,6 @@ public class HueMulator {
         }
 
         HttpHeaders headerMap = new HttpHeaders();
-        headerMap.set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
-        headerMap.set("Expires", "Mon, 1 Aug 2011 09:00:00 GMT");
-        headerMap.set("Pragma", "no-cache");
-        headerMap.set("Connection", "close");
-        headerMap.set("Access-Control-Max-Age", "3600");
-        headerMap.set("Access-Control-Allow-Origin", "*");
-        headerMap.set("Access-Control-Allow-Credentials", "true");
-        headerMap.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
-        headerMap.set("Access-Control-Allow-Headers", "Content-Type");
-        headerMap.remove("Date");
-        headerMap.set("Content-Type", "application/json");
-
 
         ResponseEntity<String> entity = new ResponseEntity<>(responseString, headerMap, HttpStatus.OK);
         return entity;
