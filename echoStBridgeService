@@ -77,7 +77,7 @@ case "$1" in
     fi
     ;;
   *)
-    echo "Usage: /etc/init.d/echoStBridgeService {start|stop|restart|status}"
+    echo "Usage: /etc/init.d/echoStBridgeService {start|stop|restart|status|config}"
     exit 1
     ;;
 esac
