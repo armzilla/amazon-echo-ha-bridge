@@ -9,3 +9,4 @@ buildNumber.properties
 *.iml
 data
 .idea
+logs/

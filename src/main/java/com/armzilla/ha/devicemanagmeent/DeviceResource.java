@@ -66,5 +66,4 @@ public class DeviceResource {
         return new ResponseEntity<>(null, null, HttpStatus.NO_CONTENT);
     }
 
-
 }
