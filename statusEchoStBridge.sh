@@ -8,6 +8,7 @@ then
         echo Not Running
     else
         echo Running PID=${statme}
+        ps -p ${statme}
     fi
 else
     echo Not Running
