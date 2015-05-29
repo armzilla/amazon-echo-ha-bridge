@@ -59,13 +59,15 @@ then you need to configure port forwarding from your router port 8080 to 192.168
 		3) Clear All Devices (Note: Perform Echo FORGET after doing this)
 			This allows you to clear your server devices and re-import
 
+#NOTE: Security for the device has not yet been implemented so you should probably diable the port forward after you complete the Device Authorization.  Otherwise the server can be reached from outside (if someone guesses your IP and port) and this would allow access to the rest interface to see device list inluding control urls.
+
 TODO:
 0) Add security
 1) Add ability to rename devices.  currently the name matchins the Preferences Name in the Smart Things App
 2) Nicer GUI
 3) Support Multiple ST Hubs (When I have more then one so I can test :)
 
-Know Issue:
+Known Issue:
 	If you select no authorized swtiches and click "Authorize" your emulator will clear all values correctly.
 	However for some reason when you return to authorize devices the smart app in the browser will display a message
 	"The page at https//graph.api.smartthings.com says: Please select at least one device to authorize"
