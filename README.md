@@ -1,5 +1,5 @@
 ![codeship status](https://codeship.com/projects/998e16f0-ca03-0132-6689-76c03995407a/status?branch=master)
-# amazon-echo-ha-bridge-smart-things
+# amazon-echo-ha-bridge
 
 This is a fork of armzilla amazon-echo-ha-bridge modifed for integration with Smart Things
 

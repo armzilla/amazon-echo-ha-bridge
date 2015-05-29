@@ -13,7 +13,7 @@
 
 # Alter these two lines if your server user/home is different then recommended
 export ECHO_BRIDGE_USER="pi"
-export ECHO_BRIDGE_HOME="/home/pi/git/amazon-echo-ha-bridge-smart-things"
+export ECHO_BRIDGE_HOME="/home/pi/git/amazon-echo-ha-bridge"
 
 #scripts
 START="./startEchoStBridge.sh"
