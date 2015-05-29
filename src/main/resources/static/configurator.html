@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ng="http://angularjs.org">
+<head>
+<style type="text/css">
+body {
+	line-height: 1.5;
+    font-size: 14px;
+}
+</style>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js"></script>
+<script type="text/javascript">
+
+angular.module('configurator', [])
+
+.service('bridgeService', ["$http", function($http) {
+	var self = this;
+	this.state = {base: "http://localhost:8080/api/devices", devices: [], error: ""};
+	
+	this.viewDevices = function() {
+		this.state.error = "";
+		return $http.get(this.state.base).then(
+			function(response) {
+				self.state.devices = response.data[0].content;
+			},
+			function(error) {
+				if (error.data) {
+					self.state.error = error.data.message;
+				} else {
+					self.state.error = "If you're not seeing any devices, you may be running into problems with CORS. " +
+					"You can work around this by running a fresh launch of Chrome with the --disable-web-security flag.";
+				}
+				console.log(error);
+			}
+		);
+	}
+	
+	this.addDevice = function(name, type, onUrl, offUrl) {
+		this.state.error = "";
+		return $http.post(this.state.base, {name: name, deviceType: type, onUrl: onUrl, offUrl: offUrl}).then(
+			function(response) {
+				self.viewDevices();
+			},
+			function(error) {
+				if (error.data) {
+					self.state.error = error.data.message;
+				}
+				console.log(error);
+			}
+		);
+	};
+	
+	this.deleteDevice = function(id) {
+		this.state.error = "";
+		return $http.delete(this.state.base + "/" + id).then(
+			function(response) {
+				self.viewDevices();
+			},
+			function(error) {
+				if (error.data) {
+					self.state.error = error.data.message;
+				}
+				console.log(error);
+			}
+		);
+	};
+}])
+
+.controller('ViewingController', ["$scope", "bridgeService", function($scope, bridgeService) {
+	bridgeService.viewDevices();
+	$scope.bridge = bridgeService.state;
+	$scope.deleteDevice = function(device) {
+		bridgeService.deleteDevice(device.id);
+	}
+	$scope.testUrl = function(url) {
+		window.open(url, "_blank");
+	}
+}])
+
+.controller('AddingController', ["$scope", "bridgeService", function($scope, bridgeService) {
+
+	$scope.bridge = bridgeService.state;
+	$scope.device = {name: "", type: "switch", onUrl: "", offUrl: ""};
+	$scope.vera = {base: "http://192.168.1.144:3480", id: 1};
+	
+	$scope.buildUrls = function() {
+		$scope.device.onUrl = $scope.vera.base
+			+ "/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=1&DeviceNum="
+			+ $scope.vera.id;
+		$scope.device.offUrl = $scope.vera.base
+			+ "/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=0&DeviceNum="
+			+ $scope.vera.id;
+	};
+	
+	$scope.testUrl = function(url) {
+		window.open(url, "_blank");
+	}
+	
+	$scope.addDevice = function() {
+		bridgeService.addDevice($scope.device.name, $scope.device.type, $scope.device.onUrl, $scope.device.offUrl).then(
+			function() {
+				$scope.device.name = "";
+				$scope.device.onUrl = "";
+				$scope.device.offUrl = "";
+			},
+			function(error) {
+			}
+		);
+	}
+
+}])
+
+.controller('ErrorsController', ["$scope", "bridgeService", function($scope, bridgeService) {
+	$scope.bridge = bridgeService.state;
+}])
+
+</script>
+</head>
+<body ng-app="configurator">
+
+<div ng-controller="ViewingController">
+
+<h3>Bridge settings</h3>
+	<label>Bridge server<input type="text" ng-model="bridge.base" size="150"></label>
+	<button type="button" ng-click="testUrl(bridge.base)">Go</button>
+<h3>Current devices</h3>
+	<dl>
+	<table border=1>
+	<tr><td>ID</td><td>NAME</td><td>TYPE</td></tr>
+	<tr ng-repeat="device in bridge.devices">
+		<td>{{device.id}}</td>
+		<td>{{device.name}}</td>
+		<td>{{device.deviceType}}</td>
+		<td><button type="button" ng-click="testUrl(device.onUrl)">Test ON</button></td>
+		<td><button type="button" ng-click="testUrl(device.offUrl)">Test OFF</button></td>
+		<td><button type="button" ng-click="deleteDevice(device)">Delete</button></td>
+	</tr>
+	</table>
+</div>
+
+<div ng-controller="AddingController">
+<h3>Add a new device</h3>
+	You can generate on/off URLs by filling in the Vera server URL and device ID, or you
+	can fill them out manually.
+
+	<form ng-submit="addDevice()">
+		<label>Name <input type="text" ng-model="device.name" size="150"/></label><br/>
+		<label>Vera Server <input type="text" ng-model="vera.base" size="40"/></label>
+		<label>Device ID <input type="text" ng-model="vera.id"/></label><button type="button" ng-click="buildUrls()">Generate URLs</button><br/>
+		<label>On URL <input type="text" ng-model="device.onUrl" size="200"/></label>
+			<button type="button" ng-click="testUrl(device.onUrl)">Test</button><br/>
+		<label>Off URL <input type="text" ng-model="device.offUrl" size="200"/></label>
+			<button type="button" ng-click="testUrl(device.offUrl)">Test</button><br/>
+		<button type="submit">Add Device</button>
+	</form>
+</div>
+
+<div ng-controller="ErrorsController">
+<h3 ng-show='bridge.error != ""'>ERROR</h3>
+<div ng-show='bridge.error != ""'>
+{{bridge.error}}
+</div>
+</div>
+
+</body>
+</html>
