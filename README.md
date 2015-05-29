@@ -95,6 +95,7 @@ then you need to configure port forwarding from your router port 8080 to 192.168
 		3) Clear All Devices (Note: Perform Echo FORGET after doing this)
 			This allows you to clear your server devices and re-import
 <BR>
+</ul>
 NOTE: Security for the device has not yet been implemented so you should probably diable the port forward after you complete the Device Authorization.  Otherwise the server can be reached from outside (if someone guesses your IP and port) and this would allow access to the rest interface to see device list inluding control urls.
 <BR>
 TODO:
