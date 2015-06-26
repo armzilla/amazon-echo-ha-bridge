@@ -40,6 +40,23 @@ public class DeviceResource {
         return new ResponseEntity<>(deviceEntry, null, HttpStatus.CREATED);
     }
 
+    @RequestMapping(value = "/{lightId}", method = RequestMethod.PUT, produces = "application/json", headers = "Accept=application/json")
+    public ResponseEntity<DeviceDescriptor> updateDevice(@PathVariable("lightId") String id, @RequestBody Device device) {
+        DeviceDescriptor deviceEntry = deviceRepository.findOne(id);
+        if(deviceEntry == null){
+            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+        }
+
+        deviceEntry.setName(device.getName());
+        deviceEntry.setDeviceType(device.getDeviceType());
+        deviceEntry.setOnUrl(device.getOnUrl());
+        deviceEntry.setOffUrl(device.getOffUrl());
+
+        deviceRepository.save(deviceEntry);
+
+        return new ResponseEntity<>(deviceEntry, null, HttpStatus.OK);
+    }
+
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<List<DeviceDescriptor>> findAllDevices() {
         List<DeviceDescriptor> deviceList = deviceRepository.findAll();
