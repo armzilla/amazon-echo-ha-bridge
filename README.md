@@ -5,7 +5,27 @@
 emulates philips hue api to other home automation gateways.  The Amazon echo now supports wemo and philip hue... great news if you own any of those devices!
 My house is pretty heavily invested in the z-wave using the Vera as the gateway and thought it would be nice bridge the Amazon Echo to it.
 
-Register a device, bind to some sort of on/off (vera style) url
+
+To run using maven
+```
+mvn spring-boot:run
+```
+
+somewhat hacked together for now, please excuse the hard coded values
+
+or build using maven, grab the jar, run like this:
+```
+mvn install
+java -jar target/amazon-echo-bridge-0.1.0.jar --upnp.config.address=192.168.1.240
+```
+replace the --upnp.config.address value with the server ipv4 address. 
+
+Then configure by going to the /configurator.html url 
+```
+http://192.168.1.240:8080/configurator.html
+```
+
+or Register a device, via REST by binding some sort of on/off (vera style) url
 ```
 POST http://host:8080/api/devices
 {
@@ -16,15 +36,8 @@ POST http://host:8080/api/devices
 }
 ```
 
-To run using maven
-```
-mvn spring-boot:run
-```
+After this Tell Alexa: "Alexa, discover my devices"
 
-somewhat hacked together for now, please excuse the hard coded values
+Then you can say "Alexa, Turn on the office light" or whatever name you have given your configured devices.
 
-grab the jar, run like this:
-```
-java -jar amazon-echo-bridge-0.1.0.jar --upnp.config.address=192.168.1.240
-```
-replace the --upnp.config.address value with the server ipv4 address. 
+To view or remove devices that Alexa knows about, you can use the mobile app Menu / Settings / Connected Home
