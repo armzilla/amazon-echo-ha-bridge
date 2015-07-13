@@ -63,6 +63,11 @@ public class HueMulator {
         return new ResponseEntity<>(deviceResponseMap, null, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/*", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<String> postAPI(HttpServletRequest request) {
+        return new ResponseEntity<String>("[{\"success\":{\"username\":\"lights\"}}]", HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<HueApiResponse> getApi(@PathVariable(value = "userId") String userId, HttpServletRequest request) {
         log.info("hue api root requested: " + userId + " from " + request.getRemoteAddr());
