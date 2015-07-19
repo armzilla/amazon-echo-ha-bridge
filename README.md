@@ -5,6 +5,13 @@
 emulates philips hue api to other home automation gateways.  The Amazon echo now supports wemo and philip hue... great news if you own any of those devices!
 My house is pretty heavily invested in the z-wave using the Vera as the gateway and thought it would be nice bridge the Amazon Echo to it.
 
+Run (with docker)
+-----------------
+```bash
+docker build -t amazon-echo-ha-bridge .
+docker run -ti --rm --net=host amazon-echo-ha-bridge
+```
+
 Run
 ---
 To run the pre-built jar using maven:
