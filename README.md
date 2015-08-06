@@ -65,6 +65,8 @@ e.g.
     "onUrl": "http://192.168.1.201:3480/data_request?id=action&output_format=json&DeviceNum=31&serviceId=urn:upnp-org:serviceId:Dimming1&action=SetLoadLevelTarget&newLoadlevelTarget=${intensity.percent}"
 }
 ```
+See the echo's documentation for the dimming phrase.
+
 After this Tell Alexa: "Alexa, discover my devices"
 
 Then you can say "Alexa, Turn on the office light" or whatever name you have given your configured devices.
