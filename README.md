@@ -55,6 +55,16 @@ POST http://host:8080/api/devices
 }
 ```
 
+Dimming is also supported by using the expessions ${intensity.percent} or ${intensity.byte} for 0-100 and 0-255 respectively.  
+e.g.
+```
+{
+    "name": "entry light",
+    "deviceType": "switch",
+    "offUrl": "http://192.168.1.201:3480/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=0&DeviceNum=31",
+    "onUrl": "http://192.168.1.201:3480/data_request?id=action&output_format=json&DeviceNum=31&serviceId=urn:upnp-org:serviceId:Dimming1&action=SetLoadLevelTarget&newLoadlevelTarget=${intensity.percent}"
+}
+```
 After this Tell Alexa: "Alexa, discover my devices"
 
 Then you can say "Alexa, Turn on the office light" or whatever name you have given your configured devices.
