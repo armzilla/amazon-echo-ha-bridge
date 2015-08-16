@@ -70,9 +70,9 @@ See the echo's documentation for the dimming phrase.
 POST/PUT support
 -----
 added optinal fields
-contentType (currently un-validated)
-httpVerb (POST/PUT/GET only supported
-contentBody your post/put body here
+*contentType (currently un-validated)
+*httpVerb (POST/PUT/GET only supported
+*contentBody your post/put body here
 e.g: 
 ```
 {
