@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by arm on 4/13/15.
@@ -23,17 +21,27 @@ import java.util.UUID;
 @RequestMapping("/api/devices")
 public class DeviceResource {
 
+    private static final Set<String> supportedVerbs = new HashSet<>(Arrays.asList("get", "put", "post"));
+
     @Autowired
     private DeviceRepository deviceRepository;
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", headers = "Accept=application/json")
     public ResponseEntity<DeviceDescriptor> createDevice(@RequestBody Device device) {
+        if(device.getContentBody() != null ) {
+            if (device.getContentType() == null || device.getHttpVerb() == null || !supportedVerbs.contains(device.getHttpVerb().toLowerCase())) {
+                return new ResponseEntity<>(null, null, HttpStatus.BAD_REQUEST);
+            }
+        } //add more validation like content type
         DeviceDescriptor deviceEntry = new DeviceDescriptor();
         deviceEntry.setId(UUID.randomUUID().toString());
         deviceEntry.setName(device.getName());
         deviceEntry.setDeviceType(device.getDeviceType());
         deviceEntry.setOnUrl(device.getOnUrl());
         deviceEntry.setOffUrl(device.getOffUrl());
+        deviceEntry.setContentType(device.getContentType());
+        deviceEntry.setContentBody(device.getContentBody());
+        deviceEntry.setHttpVerb(device.getHttpVerb());
 
         deviceRepository.save(deviceEntry);
 

@@ -5,7 +5,7 @@
 
 	<groupId>com.armzilla.ha</groupId>
 	<artifactId>amazon-echo-bridge</artifactId>
-	<version>0.2.0</version>
+	<version>0.2.1</version>
 	<packaging>jar</packaging>
 
 	<name>Amazon Echo Bridge</name>

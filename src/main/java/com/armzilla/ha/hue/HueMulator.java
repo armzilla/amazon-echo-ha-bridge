@@ -6,9 +6,15 @@ import com.armzilla.ha.api.hue.HueApiResponse;
 import com.armzilla.ha.dao.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
@@ -139,24 +145,11 @@ public class HueMulator {
             url = device.getOffUrl();
         }
 
-        /* light weight templating here, was going to use free marker but it was a bit too
-        *  heavy for what we were trying to do.
-        *
-        *  currently provides only two variables:
-        *  intensity.byte : 0-255 brightness.  this is raw from the echo
-        *  intensity.percent : 0-100, adjusted for the vera
-        */
-        if(url.contains(INTENSITY_BYTE)){
-            String intensityByte = String.valueOf(state.getBri());
-            url = url.replace(INTENSITY_BYTE, intensityByte);
-        }else if(url.contains(INTENSITY_PERCENT)){
-            int percentBrightness = (int) Math.round(state.getBri()/255.0*100);
-            String intensityPercent = String.valueOf(percentBrightness);
-            url = url.replace(INTENSITY_PERCENT, intensityPercent);
-        }
-
+        //quick template
+        url = replaceIntensityValue(url, state.getBri());
+        String body = replaceIntensityValue(device.getContentBody(), state.getBri());
         //make call
-        if(!doHttpGETRequest(url)){
+        if(!doHttpRequest(url, device.getHttpVerb(), device.getContentType(), body)){
             return new ResponseEntity<>(null, null, HttpStatus.SERVICE_UNAVAILABLE);
         }
 
@@ -165,12 +158,48 @@ public class HueMulator {
         ResponseEntity<String> entity = new ResponseEntity<>(responseString, headerMap, HttpStatus.OK);
         return entity;
     }
+    protected String replaceIntensityValue(String request, int intensity){
+        /* light weight templating here, was going to use free marker but it was a bit too
+        *  heavy for what we were trying to do.
+        *
+        *  currently provides only two variables:
+        *  intensity.byte : 0-255 brightness.  this is raw from the echo
+        *  intensity.percent : 0-100, adjusted for the vera
+        */
+        if(request == null){
+            return "";
+        }
+        if(request.contains(INTENSITY_BYTE)){
+            String intensityByte = String.valueOf(intensity);
+            request = request.replace(INTENSITY_BYTE, intensityByte);
+        }else if(request.contains(INTENSITY_PERCENT)){
+            int percentBrightness = (int) Math.round(intensity/255.0*100);
+            String intensityPercent = String.valueOf(percentBrightness);
+            request = request.replace(INTENSITY_PERCENT, intensityPercent);
+        }
+        return request;
+    }
 
-    protected boolean doHttpGETRequest(String url) {
-        log.info("calling GET on URL: " + url);
-        HttpGet httpGet = new HttpGet(url);
+    protected boolean doHttpRequest(String url, String httpVerb, String contentType, String body){
+        HttpUriRequest request = null;
+        if(HttpGet.METHOD_NAME.equalsIgnoreCase(httpVerb) || httpVerb == null) {
+            request = new HttpGet(url);
+        }else if(HttpPost.METHOD_NAME.equalsIgnoreCase(httpVerb)){
+            HttpPost postRequest = new HttpPost(url);
+            ContentType parsedContentType = ContentType.parse(contentType);
+            StringEntity requestBody = new StringEntity(body, parsedContentType);
+            postRequest.setEntity(requestBody);
+            request = postRequest;
+        }else if(HttpPut.METHOD_NAME.equalsIgnoreCase(httpVerb)){
+            HttpPut putRequest = new HttpPut(url);
+            ContentType parsedContentType = ContentType.parse(contentType);
+            StringEntity requestBody = new StringEntity(body, parsedContentType);
+            putRequest.setEntity(requestBody);
+            request = putRequest;
+        }
+        log.info("Making outbound call: " + request);
         try {
-            HttpResponse response = httpClient.execute(httpGet);
+            HttpResponse response = httpClient.execute(request);
             EntityUtils.consume(response.getEntity()); //close out inputstream ignore content
             log.info("GET on URL responded: " + response.getStatusLine().getStatusCode());
             if(response.getStatusLine().getStatusCode() == 200){
@@ -180,5 +209,7 @@ public class HueMulator {
             log.error("Error calling out to HA gateway", e);
         }
         return false;
+
     }
+
 }
