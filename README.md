@@ -67,6 +67,25 @@ e.g.
 ```
 See the echo's documentation for the dimming phrase.
 
+POST/PUT support
+-----
+added optinal fields
+contentType (currently un-validated)
+httpVerb (POST/PUT/GET only supported
+contentBody your post/put body here
+e.g: 
+```
+{
+    "name": "test device",
+    "deviceType": "switch",
+    "offUrl": "http://192.168.1.201:3480/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=0&DeviceNum=31",
+    "onUrl": "http://192.168.1.201:3480/data_request?id=action&output_format=json&DeviceNum=31&serviceId=urn:upnp-org:serviceId:Dimming1&action=SetLoadLevelTarget&newLoadlevelTarget=${intensity.percent}",
+  "contentType" : "application/json",
+  "httpVerb":"POST",
+  "contentBody" : "{\"fooBar\":\"baz\"}"
+}
+```
+
 After this Tell Alexa: "Alexa, discover my devices"
 
 Then you can say "Alexa, Turn on the office light" or whatever name you have given your configured devices.
