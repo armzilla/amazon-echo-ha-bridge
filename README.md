@@ -65,6 +65,17 @@ e.g.
     "onUrl": "http://192.168.1.201:3480/data_request?id=action&output_format=json&DeviceNum=31&serviceId=urn:upnp-org:serviceId:Dimming1&action=SetLoadLevelTarget&newLoadlevelTarget=${intensity.percent}"
 }
 ```
+
+Anything that takes an action as a result of an HTTP request will probably work - like putting Vera in and out of night mode:
+```
+{
+  "name": "night mode",
+  "deviceType": "switch",
+  "offUrl": "http://192.168.1.201:3480/data_request?id=lu_action&serviceId=urn:micasaverde-com:serviceId:HomeAutomationGateway1&action=SetHouseMode&Mode=1",
+  "onUrl": "http://192.168.1.201:3480/data_request?id=lu_action&serviceId=urn:micasaverde-com:serviceId:HomeAutomationGateway1&action=SetHouseMode&Mode=3"
+}
+```
+
 See the echo's documentation for the dimming phrase.
 
 POST/PUT support
