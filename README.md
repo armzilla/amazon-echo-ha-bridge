@@ -3,7 +3,7 @@
 
 This is a fork of armzilla amazon-echo-ha-bridge modifed for integration with Smart Things
 
-*********** This is no longer needed.    Amazon Echo has integration with ST now **********
+*********** This Smart Things branch is no longer needed.    Amazon Echo has integration with ST now **********
 
 To get things started do the following.
 
