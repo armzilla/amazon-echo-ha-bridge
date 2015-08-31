@@ -3,6 +3,8 @@
 
 This is a fork of armzilla amazon-echo-ha-bridge modifed for integration with Smart Things
 
+*********** This is no longer needed.    Amazon Echo has integration with ST now **********
+
 To get things started do the following.
 
 1) On unix edit startEchoStBridge.sh with your configration settings.
