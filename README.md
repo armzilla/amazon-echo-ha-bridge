@@ -11,7 +11,7 @@ Also, with an easy to use POST/PUT REST API, it's never been easier before to ge
 
 There are currently three different ways to run the pre-built jar file:
 
-**Java -** ```java -jar amazon-echo-bridge-0.1.2.jar```
+**Java -** ```java -jar amazon-echo-bridge-*.jar```
 
 **Maven -** ```mvn spring-boot:run```
 
@@ -42,12 +42,12 @@ In case you would like to internally configure your own build of the Amazon Echo
 **OS X** - Install [Homebrew](http://brew.sh/) and run ```brew install maven```
 
 ### Make Changes:
-For instance, the server defaults to running on port 8080. If you're already running a server (like openHAB) on 8080, you can edit ```server.port``` in ```src/main/resources/application.properties``` to your desired port before building the jar. 
+For instance, the server defaults to running on port 8080. If you're already running a server (like openHAB) on 8080, you could edit ```server.port``` in ```src/main/resources/application.properties``` to your desired port before building the jar. 
 
 Alternatively you could also pass in a command line argument to override ```server.port```.
 
 ### Compile:
-To build the jar file yourself, simply run Maven like this:
+To build the jar file yourself, make your changes and simply run Maven like this:
 ```
 mvn install
 ```
