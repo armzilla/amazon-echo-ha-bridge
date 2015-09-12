@@ -84,8 +84,8 @@
                     <td>{{device.name}}</td>
                     <td>{{device.deviceType}}</td>
                     <td>
-                        <button class="btn btn-info" type="submit" ng-click="testUrl(device.onUrl)">Test ON</button>
-                        <button class="btn btn-info" type="submit" ng-click="testUrl(device.offUrl)">Test OFF</button>
+                        <button class="btn btn-info" type="submit" ng-click="testUrl(device.onUrl)">ON</button>
+                        <button class="btn btn-info" type="submit" ng-click="testUrl(device.offUrl)">OFF</button>
                         <button class="btn btn-danger" type="submit" ng-click="editDevice(device)">Edit</button>
                         <button class="btn btn-danger" type="submit" ng-click="deleteDevice(device)">Delete</button>
                     </td>
@@ -99,7 +99,7 @@
             <div class="panel-heading"><h2 class="panel-title">Add a new device</h2></div>
             <ul class="list-group">
                 <li class="list-group-item">
-                    <p class="text-muted">You can generate on/off URLs by filling in the Vera server URL, port, and
+                    <p class="text-muted">You can generate on/off URLs by filling in a Vera server URL, port, and
                         device ID; or you can fill them out manually in the lower section.</p>
 
                     <form class="form-horizontal">
@@ -173,7 +173,7 @@
         </div>
     </div>
 </div>
-
+ 
 </div>
 </body>
 </html>

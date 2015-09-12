@@ -1,52 +1,61 @@
-![codeship status](https://codeship.com/projects/998e16f0-ca03-0132-6689-76c03995407a/status?branch=master)
+# Amazon Echo Bridge &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![codeship status](https://codeship.com/projects/998e16f0-ca03-0132-6689-76c03995407a/status?branch=master)
+
+Amazon Echo Bridge allows you to quickly emulate a Phillips Hue bridge, bringing the ability to seamlessly integrate an Amazon Echo into various home automation systems.  
+
+Also, with an easy to use POST/PUT REST API, it's never been easier before to get your devices up and running with the Amazon Echo with your own embedded applications!
+
+## Quick Start
+
+There are currently three different ways to run the pre-built jar file:
+
+**Java -** ```java -jar amazon-echo-bridge-*.jar```
+
+**Maven -** ```mvn spring-boot:run```
+
+**Docker -** ```docker build -t amazon-echo-ha-bridge .
+docker run -ti --rm --net=host amazon-echo-ha-bridge```
+
+ Additionally, it's also recommended you pass the command line arguments ```--upnp.config.address``` and ```--server.port``` to override the hardcoded values currently implemented.
+
+**Examples:**
+```--upnp.config.address=192.168.1.240 --server.port=8081```
+
+After the application is started and running, you can access the configurator by accessing http://YOURIP:PORT/configurator.html. 
+
+Input your devices using the form at the bottom of the page, add command URLs to parse (useful if you use a system like OpenHAB), and save.
+
+Instruct your Amazon Echo to take control of your devices by saying "Alexa, discover my devices" and your all set!
 
 
-# amazon-echo-ha-bridge
-emulates philips hue api to other home automation gateways.  The Amazon echo now supports wemo and philip hue... great news if you own any of those devices!
-My house is pretty heavily invested in the z-wave using the Vera as the gateway and thought it would be nice bridge the Amazon Echo to it.
+## Build
 
-Run (with docker)
------------------
-```bash
-docker build -t amazon-echo-ha-bridge .
-docker run -ti --rm --net=host amazon-echo-ha-bridge
-```
+In case you would like to internally configure your own build of the Amazon Echo Bridge, a few requisites are required.
 
-Run
----
-To run the pre-built jar using maven:
-```
-mvn spring-boot:run
-```
-It's somewhat hacked together for now, please excuse the hard coded values
+### Install Maven: 
 
-Build
------
-The server defaults to running on port 8080. If you're already running a server (like openHAB) on 8080, edit ```server.port``` in ```src/main/resources/application.properties``` to your desired port before building the jar. Alternately you can pass in a command line argument to override ```server.port```.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Ubuntu/Linux** - ```sudo apt-get install maven```
 
-To customize and build it yourself, build a new jar with maven:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+**OS X** - Install [Homebrew](http://brew.sh/) and run ```brew install maven```
+
+### Make Changes:
+For instance, the server defaults to running on port 8080. If you're already running a server (like openHAB) on 8080, you could edit ```server.port``` in ```src/main/resources/application.properties``` to your desired port before building the jar. 
+
+Alternatively you could also pass in a command line argument to override ```server.port```.
+
+### Compile:
+To build the jar file yourself, make your changes and simply run Maven like this:
 ```
 mvn install
 ```
-Then locate the jar and start the server with:
-```
-java -jar target/amazon-echo-bridge-0.X.Y.jar --upnp.config.address=192.168.1.Z
-```
-replace the --upnp.config.address value with the server ipv4 address.
 
-Then configure by going to the /configurator.html url 
-```
-http://192.168.1.240:8080/configurator.html
-```
+Then locate the jar and start the server using the instructions above.
 
-If using openHAB, use URLs of the form:
-```
-http://user:password@192.168.1.Z:8080/CMD?light_garage=ON
-```
+## POST/PUT REST API
 
-or Register a device, via REST by binding some sort of on/off (vera style) url
+Along with registering devices via the Configurator page, you can also push device information via REST to the Amazon Echo Bridge like so:
 ```
-POST http://host:8080/api/devices
+POST http://host:port/api/devices
 {
 "name" : "bedroom light",
 "deviceType" : "switch",
@@ -55,8 +64,10 @@ POST http://host:8080/api/devices
 }
 ```
 
-Dimming is also supported by using the expessions ${intensity.percent} or ${intensity.byte} for 0-100 and 0-255 respectively.  
-e.g.
+Dimming is also supported by using the expression ```${intensity.percent}``` with a value of 0-100 or ```${intensity.byte}``` with a value 0-255, respectively.
+
+**Example:**
+
 ```
 {
     "name": "entry light",
@@ -66,25 +77,15 @@ e.g.
 }
 ```
 
-Anything that takes an action as a result of an HTTP request will probably work - like putting Vera in and out of night mode:
-```
-{
-  "name": "night mode",
-  "deviceType": "switch",
-  "offUrl": "http://192.168.1.201:3480/data_request?id=lu_action&serviceId=urn:micasaverde-com:serviceId:HomeAutomationGateway1&action=SetHouseMode&Mode=1",
-  "onUrl": "http://192.168.1.201:3480/data_request?id=lu_action&serviceId=urn:micasaverde-com:serviceId:HomeAutomationGateway1&action=SetHouseMode&Mode=3"
-}
-```
+You can also push additional optional fields, such as:
 
-See the echo's documentation for the dimming phrase.
+ * contentType, which currently isn't validated
 
-POST/PUT support
------
-added optinal fields
- * contentType (currently un-validated)
- * httpVerb (POST/PUT/GET only supported
- * contentBody your post/put body here
-e.g: 
+ * httpVerb, Only POST/PUT/GET supported
+
+ * contentBody: Your POST/PUT body
+
+Like so:
 ```
 {
     "name": "test device",
@@ -96,9 +97,3 @@ e.g:
   "contentBody" : "{\"fooBar\":\"baz\"}"
 }
 ```
-
-After this Tell Alexa: "Alexa, discover my devices"
-
-Then you can say "Alexa, Turn on the office light" or whatever name you have given your configured devices.
-
-To view or remove devices that Alexa knows about, you can use the mobile app Menu / Settings / Connected Home
