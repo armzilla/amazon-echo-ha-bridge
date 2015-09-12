@@ -23,7 +23,7 @@ docker run -ti --rm --net=host amazon-echo-ha-bridge```
 **Examples:**
 ```--upnp.config.address=192.168.1.240 --server.port=8081```
 
-After the application is started and running, you can access the configurator by accessing http://YOURIP/configurator.html. 
+After the application is started and running, you can access the configurator by accessing http://YOURIP:PORT/configurator.html. 
 
 Input your devices using the form at the bottom of the page, add command URLs to parse (useful if you use a system like OpenHAB), and save.
 
@@ -58,7 +58,7 @@ Then locate the jar and start the server using the instructions above.
 
 Along with registering devices via the Configurator page, you can also push device information via REST to the Amazon Echo Bridge like so:
 ```
-POST http://host:8080/api/devices
+POST http://host:port/api/devices
 {
 "name" : "bedroom light",
 "deviceType" : "switch",
