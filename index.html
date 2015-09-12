@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Amazon Echo Bridge | Get Connected</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Amazon Echo Bridge</h1>
+      <h2 class="project-tagline">Get Connected</h2>
+      <a href="https://github.com/brysonreece/Amazon-Echo-Bridge" class="btn">View on GitHub</a>
+      <a href="https://github.com/brysonreece/Amazon-Echo-Bridge/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/brysonreece/Amazon-Echo-Bridge/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p><img src="https://codeship.com/projects/998e16f0-ca03-0132-6689-76c03995407a/status?branch=master" alt="codeship status"></p>
+
+<p>Amazon Echo Bridge allows you to quickly emulate a Phillips Hue bridge, bringing the ability to seamlessly integrate an Amazon Echo into various home automation systems.  </p>
+
+<p>Also, with an easy to use POST/PUT REST API, it's never been easier before to get your devices up and running with the Amazon Echo within your own embedded applications!</p>
+
+<h2>
+<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick Start</h2>
+
+<p>There are currently three different ways to run the pre-built jar file:</p>
+
+<p><strong>Java -</strong> <code>java -jar amazon-echo-bridge-*.jar</code></p>
+
+<p><strong>Maven -</strong> <code>mvn spring-boot:run</code></p>
+
+<p><strong>Docker -</strong> <code>docker build -t amazon-echo-ha-bridge .
+docker run -ti --rm --net=host amazon-echo-ha-bridge</code></p>
+
+<p>Additionally, it's also recommended you pass the command line arguments <code>--upnp.config.address</code> and <code>--server.port</code> to override the hardcoded values currently implemented.</p>
+
+<p><strong>Examples:</strong>
+<code>--upnp.config.address=192.168.1.240 --server.port=8081</code></p>
+
+<p>After the application is started and running, you can access the configurator by accessing http://YOURIP:PORT/configurator.html. </p>
+
+<p>Input your devices using the form at the bottom of the page, add command URLs to parse (useful if you use a system like OpenHAB), and save.</p>
+
+<p>Instruct your Amazon Echo to take control of your devices by saying "Alexa, discover my devices" and your all set!</p>
+
+<h2>
+<a id="build" class="anchor" href="#build" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build</h2>
+
+<p>In case you would like to internally configure your own build of the Amazon Echo Bridge, a few requisites are required.</p>
+
+<h3>
+<a id="install-maven" class="anchor" href="#install-maven" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install Maven:</h3>
+
+<p>       <strong>Ubuntu/Linux</strong> - <code>sudo apt-get install maven</code></p>
+
+<p>       
+<strong>OS X</strong> - Install <a href="http://brew.sh/">Homebrew</a> and run <code>brew install maven</code></p>
+
+<h3>
+<a id="make-changes" class="anchor" href="#make-changes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Make Changes:</h3>
+
+<p>For instance, the server defaults to running on port 8080. If you're already running a server (like openHAB) on 8080, you could edit <code>server.port</code> in <code>src/main/resources/application.properties</code> to your desired port before building the jar. </p>
+
+<p>Alternatively you could also pass in a command line argument to override <code>server.port</code>.</p>
+
+<h3>
+<a id="compile" class="anchor" href="#compile" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compile:</h3>
+
+<p>To build the jar file yourself, make your changes and simply run Maven like this:</p>
+
+<pre><code>mvn install
+</code></pre>
+
+<p>Then locate the jar and start the server using the instructions above.</p>
+
+<h2>
+<a id="postput-rest-api" class="anchor" href="#postput-rest-api" aria-hidden="true"><span class="octicon octicon-link"></span></a>POST/PUT REST API</h2>
+
+<p>Along with registering devices via the Configurator page, you can also push device information via REST to the Amazon Echo Bridge like so:</p>
+
+<pre><code>POST http://host:port/api/devices
+{
+"name" : "bedroom light",
+"deviceType" : "switch",
+  "onUrl" : "http://192.168.1.201:3480/data_request?id=action&amp;output_format=json&amp;serviceId=urn:upnp-org:serviceId:SwitchPower1&amp;action=SetTarget&amp;newTargetValue=1&amp;DeviceNum=41",
+  "offUrl" : "http://192.168.1.201:3480/data_request?id=action&amp;output_format=json&amp;serviceId=urn:upnp-org:serviceId:SwitchPower1&amp;action=SetTarget&amp;newTargetValue=0&amp;DeviceNum=41"
+}
+</code></pre>
+
+<p>Dimming is also supported by using the expression <code>${intensity.percent}</code> with a value of 0-100 or <code>${intensity.byte}</code> with a value 0-255, respectively.</p>
+
+<p><strong>Example:</strong></p>
+
+<pre><code>{
+    "name": "entry light",
+    "deviceType": "switch",
+    "offUrl": "http://192.168.1.201:3480/data_request?id=action&amp;output_format=json&amp;serviceId=urn:upnp-org:serviceId:SwitchPower1&amp;action=SetTarget&amp;newTargetValue=0&amp;DeviceNum=31",
+    "onUrl": "http://192.168.1.201:3480/data_request?id=action&amp;output_format=json&amp;DeviceNum=31&amp;serviceId=urn:upnp-org:serviceId:Dimming1&amp;action=SetLoadLevelTarget&amp;newLoadlevelTarget=${intensity.percent}"
+}
+</code></pre>
+
+<p>You can also push additional optional fields, such as:</p>
+
+<ul>
+<li><p>contentType, which currently isn't validated</p></li>
+<li><p>httpVerb, Only POST/PUT/GET supported</p></li>
+<li><p>contentBody: Your POST/PUT body</p></li>
+</ul>
+
+<p>Like so:</p>
+
+<pre><code>{
+    "name": "test device",
+    "deviceType": "switch",
+    "offUrl": "http://192.168.1.201:3480/data_request?id=action&amp;output_format=json&amp;serviceId=urn:upnp-org:serviceId:SwitchPower1&amp;action=SetTarget&amp;newTargetValue=0&amp;DeviceNum=31",
+    "onUrl": "http://192.168.1.201:3480/data_request?id=action&amp;output_format=json&amp;DeviceNum=31&amp;serviceId=urn:upnp-org:serviceId:Dimming1&amp;action=SetLoadLevelTarget&amp;newLoadlevelTarget=${intensity.percent}",
+  "contentType" : "application/json",
+  "httpVerb":"POST",
+  "contentBody" : "{\"fooBar\":\"baz\"}"
+}
+</code></pre>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/armzilla/amazon-echo-ha-bridge">Amazon Echo Bridge</a> is maintained by <a href="https://github.com/armzilla">Armzilla</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://github.com/brysonreece">Bryson Reece</a> using <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
