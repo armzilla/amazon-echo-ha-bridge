@@ -1,7 +1,4 @@
-![codeship status](https://codeship.com/projects/998e16f0-ca03-0132-6689-76c03995407a/status?branch=master)
-
-
-# Amazon Echo Bridge 
+# Amazon Echo Bridge ![codeship status](https://codeship.com/projects/998e16f0-ca03-0132-6689-76c03995407a/status?branch=master)
 
 Amazon Echo Bridge allows you to quickly emulate a Phillips Hue bridge, bringing the ability to seamlessly integrate an Amazon Echo into various home automation systems.  
 
