@@ -7,8 +7,7 @@ Amazon Echo Bridge allows you to quickly emulate a Phillips Hue bridge, bringing
 
 Also, with an easy to use POST/PUT REST API, it's never been easier before to get your devices up and running with the Amazon Echo with your own embedded applications!
 
-##Quick Start
----
+## Quick Start
 
 There are currently three different ways to run the pre-built jar file:
 
@@ -31,23 +30,23 @@ Input your devices using the form at the bottom of the page, add command URLs to
 Instruct your Amazon Echo to take control of your devices by saying "Alexa, discover my devices" and your all set!
 
 
-##Build
----
+## Build
+
 In case you would like to internally configure your own build of the Amazon Echo Bridge, a few requisites are required.
 
-###Install Maven: 
+### Install Maven: 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Ubuntu/Linux** - ```sudo apt-get install maven```
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
 **OS X** - Install [Homebrew](http://brew.sh/) and run ```brew install maven```
 
-###Make Changes:
+### Make Changes:
 For instance, the server defaults to running on port 8080. If you're already running a server (like openHAB) on 8080, you can edit ```server.port``` in ```src/main/resources/application.properties``` to your desired port before building the jar. 
 
 Alternatively you could also pass in a command line argument to override ```server.port```.
 
-###Compile:
+### Compile:
 To build the jar file yourself, simply run Maven like this:
 ```
 mvn install
@@ -55,8 +54,7 @@ mvn install
 
 Then locate the jar and start the server using the instructions above.
 
-POST/PUT REST API
------
+## POST/PUT REST API
 
 Along with registering devices via the Configurator page, you can also push device information via REST to the Amazon Echo Bridge like so:
 ```
