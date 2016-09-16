@@ -21,5 +21,5 @@ public class SpringbootEntry {
     public static void main(String[] args) {
         SpringApplication.run(SpringbootEntry.class, args);
     }
-    
+
 }
