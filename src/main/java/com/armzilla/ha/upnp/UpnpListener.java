@@ -1,6 +1,5 @@
 package com.armzilla.ha.upnp;
 
-import com.armzilla.ha.PortsConfiguration;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,9 +25,6 @@ public class UpnpListener {
 
 	@Value("${upnp.response.port}")
 	private int upnpResponsePort;
-
-	@Autowired
-	private PortsConfiguration portsConfiguration;
 
 	@Value("${upnp.config.address}")
 	private String responseAddress;
