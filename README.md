@@ -24,8 +24,13 @@ After the application is started and running, you can access the configurator by
 
 Input your devices using the form at the bottom of the page, add command URLs to parse (useful if you use a system like OpenHAB), and save.
 
-Instruct your Amazon Echo to take control of your devices by saying "Alexa, discover my devices" and your all set!
+Instruct your Amazon Echo to learn about your devices by saying "Alexa, discover my devices" and your all set!
 
+## Using
+
+You can now control devices with your Amazon Echo by saying "Alexa, Turn on the office light" or other names you have given your configured devices.
+
+To view or remove devices that Alexa knows about, you can use the mobile app Menu / Settings / Connected Home, This is needed if you remove a device from the Amazon Echo Bridge.
 
 ## Build
 
@@ -49,7 +54,7 @@ To build the jar file yourself, make your changes and simply run Maven like this
 mvn install
 ```
 
-Then locate the jar and start the server using the instructions above.
+Then locate the jar and start the server using the instructions above. By default maven will put the jar file in the target directory. ```java -jar target/amazon-echo-bridge-*.jar``` 
 
 ## POST/PUT REST API
 

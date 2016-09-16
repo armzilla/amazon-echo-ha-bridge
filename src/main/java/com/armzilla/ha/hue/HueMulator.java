@@ -210,8 +210,9 @@ public class HueMulator {
         try {
             HttpResponse response = httpClient.execute(request);
             EntityUtils.consume(response.getEntity()); //close out inputstream ignore content
-            log.info("GET on URL responded: " + response.getStatusLine().getStatusCode());
-            if(response.getStatusLine().getStatusCode() == 200){
+            int httpResponseCode = response.getStatusLine().getStatusCode();
+            log.info("GET on URL responded: " + httpResponseCode);
+            if(httpResponseCode >= 200 && httpResponseCode < 300){ //had complaints that some apps do not respond back with pure 200
                 return true;
             }
         } catch (IOException e) {

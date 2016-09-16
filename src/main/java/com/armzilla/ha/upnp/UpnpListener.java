@@ -34,11 +34,19 @@ public class UpnpListener {
 	@Value("${emulator.portcount}")
 	private int portCount;
 
+	@Value("${upnp.disable}")
+	private boolean disable;
+
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Scheduled(fixedDelay = Integer.MAX_VALUE)
 	public void startListening(){
+
+		if (disable)  {
+			return;
+		}
+		
 		log.info("Starting UPNP Discovery Listener");
 
 		try (DatagramSocket responseSocket = new DatagramSocket(upnpResponsePort);
