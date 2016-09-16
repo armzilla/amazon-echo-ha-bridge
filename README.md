@@ -13,7 +13,7 @@ change log:
 * relaxed http response codes to anything in the 200 to less than 300 http response codes to support misbehaving resources
 
 other notes:
-Ive seen some folks able to run this but not able to discover devices. I would recommend checking for duplicated devices names as i have seen this to cause the echo to reject all devices. The lazy way would be to delete the /data directory and start over.
+Ive seen some folks able to run this but not able to discover devices. I would recommend checking for devices with duplicate names as i have seen this to cause the echo to reject all devices. The lazy way would be to delete the /data directory and start over.
 
 ## Quick Start
 
