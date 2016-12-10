@@ -65,7 +65,7 @@ public class HueMulator {
     private Page<DeviceDescriptor> getDevices(HttpServletRequest request) {
         int pageNumber = request.getLocalPort()-portBase;
         Page<DeviceDescriptor> result = repository.findByDeviceType("switch", new PageRequest(pageNumber, 25));
-        log.info("Found " + result.getNumberOfElements() + " devices for page " + result.getNumber());
+        log.info("Found " + result.getNumberOfElements() + " devices on port " + request.getLocalPort());
 
         return result;
     }
