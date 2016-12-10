@@ -1,0 +1,13 @@
+[Unit]
+Description=Amazon Echo HA Bridge
+After=syslog.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/echo-ha-bridge/echo-ha-bridge.pid
+WorkingDirectory=/opt/echo-ha-bridge/
+ExecStart=/usr/bin/java -jar amazon-echo-bridge.jar & > /dev/null
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

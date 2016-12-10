@@ -43,6 +43,24 @@ You can now control devices with your Amazon Echo by saying "Alexa, Turn on the 
 
 To view or remove devices that Alexa knows about, you can use the mobile app Menu / Settings / Connected Home, This is needed if you remove a device from the Amazon Echo Bridge.
 
+## Running as a service
+
+If you are running this on Linux with `systemd`, do the following:
+1. Modify `echo-ha-bridge.service` by changing the name of the jar file to execute and location of the working directory
+2. Copy `echo-ha-bridge.service` to `/lib/systemd/system/`
+3. Run `sudo systemctl enable echo-ha-bridge.service`
+4. Navigate to the location of `amazon-ha-bridge-*.jar` and create a file called `application.properties` with the following content:
+```
+upnp.response.port=50000
+upnp.config.address=ip address of your machine
+emulator.portbase=should be same as server.port
+emulator.portcount=3
+upnp.disable=false
+server.port=port number you want the server to be listening on
+logging.file=full path to the file where logs will be written to
+```
+ 
+
 ## Build
 
 In case you would like to internally configure your own build of the Amazon Echo Bridge, a few requisites are required.
