@@ -107,20 +107,61 @@ angular.module('configurator', [])
 
         $scope.bridge = bridgeService.state;
         $scope.device = {id: "", name: "", type: "switch", onUrl: "", offUrl: ""};
-        $scope.vera = {base: "", port: "3480", id: ""};
+        $scope.hubs = {
+            vera: {
+                base: ""
+                , port: "3480"
+                , id: ""
+                , onUrl: "/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=1&DeviceNum={deviceId}"
+                , offUrl: "/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=0&DeviceNum={deviceId}"
+                , user: ""
+                , pass: ""
+            }
+            , openhab: {
+                base: ""
+                , port: "8080"
+                , id: ""
+                , onUrl: "/CMD?{deviceId}=ON"
+                , offUrl: "/CMD?{deviceId}=OFF"
+                , user: ""
+                , pass: ""
+            }
+        }
+        // set default system to Vera
+        $scope.selectedHub = "vera";
+        $scope.system = $scope.hubs.vera;
         bridgeService.device = $scope.device;
 
-        $scope.buildUrls = function () {
-            if ($scope.vera.base.indexOf("http") < 0) {
-                $scope.vera.base = "http://" + $scope.vera.base;
+        $scope.selectHub = function (hubName) {
+            console.log('Selecting hub', $scope.selectedHub)
+            if (hubName === "openhab") {
+                $scope.system = $scope.hubs.openhab;
             }
-            $scope.device.onUrl = $scope.vera.base + ":" + $scope.vera.port
-                + "/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=1&DeviceNum="
-                + $scope.vera.id;
-            $scope.device.offUrl = $scope.vera.base + ":" + $scope.vera.port
-                + "/data_request?id=action&output_format=json&serviceId=urn:upnp-org:serviceId:SwitchPower1&action=SetTarget&newTargetValue=0&DeviceNum="
-                + $scope.vera.id;
-        };
+            else {
+                $scope.system = $scope.hubs.vera;
+            }
+        }
+
+        $scope.buildUrls = function () {
+            var base = ""
+            if ($scope.system.base.indexOf("http") < 0) {
+                base = "http://";
+            }
+            base += $scope.system.base;
+
+            var user = $scope.system.user.trim();
+            var pass = $scope.system.pass.trim();
+            var creds = "";
+            if (user.length > 0 && pass.length > 0) {
+                creds = encodeURIComponent(user) + ":" + encodeURIComponent(pass) + "@";
+            }
+
+            var index = base.indexOf("//") + 2;
+            base = base.slice(0, index) + creds + base.slice(index);
+
+            $scope.device.onUrl = base + ":" + $scope.system.port + $scope.system.onUrl.replace("{deviceId}", $scope.system.id);
+            $scope.device.offUrl = base + ":" + $scope.system.port + $scope.system.offUrl.replace("{deviceId}", $scope.system.id);
+      };
 
         $scope.testUrl = function (url) {
             window.open(url, "_blank");

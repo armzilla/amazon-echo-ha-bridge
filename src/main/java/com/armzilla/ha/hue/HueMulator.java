@@ -62,13 +62,20 @@ public class HueMulator {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    private Page<DeviceDescriptor> getDevices(HttpServletRequest request) {
+        int pageNumber = request.getLocalPort()-portBase;
+        Page<DeviceDescriptor> result = repository.findByDeviceType("switch", new PageRequest(pageNumber, 25));
+        log.info("Found " + result.getNumberOfElements() + " devices for page " + result.getNumber());
+
+        return result;
+    }
+
 
     @RequestMapping(value = "/{userId}/lights", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Map<String, String>> getUpnpConfiguration(@PathVariable(value = "userId") String userId, HttpServletRequest request) {
-        log.info("hue lights list requested: " + userId + " from " + request.getRemoteAddr() + request.getLocalPort());
+        log.info("hue lights list requested: " + userId + " from " + request.getRemoteAddr() + ":" + request.getLocalPort());
 
-        int pageNumber = request.getLocalPort()-portBase;
-        Page<DeviceDescriptor> deviceList = repository.findByDeviceType("switch", new PageRequest(pageNumber, 25));
+        Page<DeviceDescriptor> deviceList = this.getDevices(request);
         Map<String, String> deviceResponseMap = new HashMap<>();
         for (DeviceDescriptor device : deviceList) {
             deviceResponseMap.put(device.getId(), device.getName());
@@ -85,8 +92,7 @@ public class HueMulator {
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<HueApiResponse> getApi(@PathVariable(value = "userId") String userId, HttpServletRequest request) {
         log.info("hue api root requested: " + userId + " from " + request.getRemoteAddr());
-        int pageNumber = request.getLocalPort()-portBase;
-        Page<DeviceDescriptor> descriptorList = repository.findByDeviceType("switch", new PageRequest(pageNumber, 25));
+        Page<DeviceDescriptor> descriptorList = this.getDevices(request);
         if (descriptorList == null) {
             return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
