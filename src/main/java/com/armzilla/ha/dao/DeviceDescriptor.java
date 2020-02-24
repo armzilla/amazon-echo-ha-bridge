@@ -1,12 +1,15 @@
 package com.armzilla.ha.dao;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Created by arm on 4/13/15.
  */
-@Document(indexName = "device", type = "devicedescriptor", shards = 1, replicas = 0, refreshInterval = "-1")
+@Entity
+@Table(name = "devices")
+
 public class DeviceDescriptor{
     @Id
     private String id;
