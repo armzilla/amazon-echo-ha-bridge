@@ -26,17 +26,27 @@ public class UpnpListener {
 	@Value("${upnp.response.port}")
 	private int upnpResponsePort;
 
-	@Value("${server.port}")
-	private int httpServerPort;
-
 	@Value("${upnp.config.address}")
 	private String responseAddress;
+
+	@Value("${emulator.portbase}")
+	private int portBase;
+	@Value("${emulator.portcount}")
+	private int portCount;
+
+	@Value("${upnp.disable}")
+	private boolean disable;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Scheduled(fixedDelay = Integer.MAX_VALUE)
 	public void startListening(){
+
+		if (disable)  {
+			return;
+		}
+		
 		log.info("Starting UPNP Discovery Listener");
 
 		try (DatagramSocket responseSocket = new DatagramSocket(upnpResponsePort);
@@ -71,7 +81,9 @@ public class UpnpListener {
 				String packetString = new String(packet.getData());
 				if(isSSDPDiscovery(packetString)){
 					log.debug("Got SSDP Discovery packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort());
-					sendUpnpResponse(responseSocket, packet.getAddress(), packet.getPort());
+					for(int i = 0; i < portCount; i ++) {
+						sendUpnpResponse(responseSocket, packet.getAddress(), packet.getPort(), portBase+i, i);
+					}
 				}
 			}
 
@@ -100,13 +112,13 @@ public class UpnpListener {
 	String discoveryTemplate = "HTTP/1.1 200 OK\r\n" +
 			"CACHE-CONTROL: max-age=86400\r\n" +
 			"EXT:\r\n" +
-			"LOCATION: http://%s:%s/upnp/amazon-ha-bridge/setup.xml\r\n" +
+			"LOCATION: http://%s:%s/upnp/%s/setup.xml\r\n" +
 			"OPT: \"http://schemas.upnp.org/upnp/1/0/\"; ns=01\r\n" +
 			"01-NLS: %s\r\n" +
 			"ST: urn:schemas-upnp-org:device:basic:1\r\n" +
 			"USN: uuid:Socket-1_0-221438K0100073::urn:Belkin:device:**\r\n\r\n";
-	protected void sendUpnpResponse(DatagramSocket socket, InetAddress requester, int sourcePort) throws IOException {
-		String discoveryResponse = String.format(discoveryTemplate, responseAddress, httpServerPort, getRandomUUIDString());
+	protected void sendUpnpResponse(DatagramSocket socket, InetAddress requester, int sourcePort, int gatewayPort, int emulatorId) throws IOException {
+		String discoveryResponse = String.format(discoveryTemplate, responseAddress, gatewayPort, "amazon-ha-bridge" + emulatorId, "D1710C33-328D-4152-A5FA-5382541A92FF");
 		DatagramPacket response = new DatagramPacket(discoveryResponse.getBytes(), discoveryResponse.length(), requester, sourcePort);
 		socket.send(response);
 	}

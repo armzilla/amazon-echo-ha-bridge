@@ -1,6 +1,7 @@
 package com.armzilla.ha.upnp;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,8 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/upnp")
 public class UpnpSettingsResource {
-
     private Logger log = Logger.getLogger(UpnpSettingsResource.class);
+        @Value("${emulator.portcount}")
+        private int portCount;
 
         private String hueTemplate = "<?xml version=\"1.0\"?>\n" +
                 "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">\n" +
@@ -35,8 +37,8 @@ public class UpnpSettingsResource {
                 "<modelName>Philips hue bridge 2012</modelName>\n" +
                 "<modelNumber>929000226503</modelNumber>\n" +
                 "<modelURL>http://www.armzilla.com/amazon-echo-ha-bridge</modelURL>\n" +
-                "<serialNumber>01189998819991197253</serialNumber>\n" +
-                "<UDN>uuid:88f6698f-2c83-4393-bd03-cd54a9f8595</UDN>\n" +
+                "<serialNumber>%s</serialNumber>\n" +
+                "<UDN>uuid:%s</UDN>\n" +
                 "<serviceList>\n" +
                 "<service>\n" +
                 "<serviceType>(null)</serviceType>\n" +
@@ -72,7 +74,7 @@ public class UpnpSettingsResource {
                 log.info("upnp device settings requested: " + deviceId + " from " +   request.getRemoteAddr());
                 String hostName = request.getLocalAddr();
                 String portNumber = Integer.toString(request.getLocalPort());
-                String filledTemplate = String.format(hueTemplate, hostName, portNumber, hostName);
+                String filledTemplate = String.format(hueTemplate, hostName, request.getLocalPort(), hostName, deviceId, deviceId);
 
                 return new ResponseEntity<>(filledTemplate, null, HttpStatus.OK);
         }

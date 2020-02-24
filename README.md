@@ -4,6 +4,17 @@ Amazon Echo Bridge allows you to quickly emulate a Phillips Hue bridge, bringing
 
 Also, with an easy to use POST/PUT REST API, it's never been easier before to get your devices up and running with the Amazon Echo with your own embedded applications!
 
+## Release notes:
+v0.4.0
+change log:
+
+* require --upnp.config.address= to be specified during startup
+* support more than 25 emulated devices currently set to 75, can be increased at 25 device increments by specifying --emulator.portcount= default is 3 thus 3*25 = 75 total devices. Works by taking emulator.baseport and opening n number of ports sequentially from baseport to baseport+portcount
+* relaxed http response codes to anything in the 200 to less than 300 http response codes to support misbehaving resources
+
+other notes:
+Ive seen some folks able to run this but not able to discover devices. I would recommend checking for devices with duplicate names as i have seen this to cause the echo to reject all devices. The lazy way would be to delete the /data directory and start over.
+
 ## Quick Start
 
 There are currently three different ways to run the pre-built jar file:
@@ -24,8 +35,13 @@ After the application is started and running, you can access the configurator by
 
 Input your devices using the form at the bottom of the page, add command URLs to parse (useful if you use a system like OpenHAB), and save.
 
-Instruct your Amazon Echo to take control of your devices by saying "Alexa, discover my devices" and your all set!
+Instruct your Amazon Echo to learn about your devices by saying "Alexa, discover my devices" and your all set!
 
+## Using
+
+You can now control devices with your Amazon Echo by saying "Alexa, Turn on the office light" or other names you have given your configured devices.
+
+To view or remove devices that Alexa knows about, you can use the mobile app Menu / Settings / Connected Home, This is needed if you remove a device from the Amazon Echo Bridge.
 
 ## Build
 
@@ -49,7 +65,7 @@ To build the jar file yourself, make your changes and simply run Maven like this
 mvn install
 ```
 
-Then locate the jar and start the server using the instructions above.
+Then locate the jar and start the server using the instructions above. By default maven will put the jar file in the target directory. ```java -jar target/amazon-echo-bridge-*.jar``` 
 
 ## POST/PUT REST API
 
